@@ -8,9 +8,8 @@ create schema "public";
 
 CREATE TABLE "users" (
   "userId" serial PRIMARY KEY,
-  "username" text UNIQUE NOT NULL,
-  "hashedPassword" text NOT NULL,
   "email" text UNIQUE NOT NULL,
+  "hashedPassword" text NOT NULL,
   "joinedAt" timestamp NOT NULL
 );
 
@@ -18,7 +17,7 @@ CREATE TABLE "filmLogs" (
   "filmLogId" serial PRIMARY KEY,
   "filmTMDbId" integer NOT NULL,
   "review" text,
-  "rating" float,
+  "rating" integer,
   "liked" boolean,
   "userId" integer NOT NULL,
   "dateWatched" date NOT NULL,
@@ -26,14 +25,14 @@ CREATE TABLE "filmLogs" (
   "updatedAt" timestamptz NOT NULL
 );
 
-CREATE TABLE "filmWishlist" (
+CREATE TABLE "filmWishlists" (
   "filmWishlistId" serial PRIMARY KEY,
   "filmTMDbId" integer NOT NULL,
   "userId" integer NOT NULL,
   "createdAt" timestamptz NOT NULL
 );
 
-CREATE TABLE "followLog" (
+CREATE TABLE "followLogs" (
   "followLogId" serial PRIMARY KEY,
   "activeUserId" integer NOT NULL,
   "followedUserId" integer NOT NULL,
@@ -51,34 +50,34 @@ ALTER TABLE "users_filmLogs" ADD FOREIGN KEY ("users_userId") REFERENCES "users"
 ALTER TABLE "users_filmLogs" ADD FOREIGN KEY ("filmLogs_userId") REFERENCES "filmLogs" ("userId");
 
 
-CREATE TABLE "users_filmWishlist" (
+CREATE TABLE "users_filmWishlists" (
   "users_userId" serial,
-  "filmWishlist_userId" integer,
-  PRIMARY KEY ("users_userId", "filmWishlist_userId")
+  "filmWishlists_userId" integer,
+  PRIMARY KEY ("users_userId", "filmWishlists_userId")
 );
 
-ALTER TABLE "users_filmWishlist" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
+ALTER TABLE "users_filmWishlists" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
 
-ALTER TABLE "users_filmWishlist" ADD FOREIGN KEY ("filmWishlist_userId") REFERENCES "filmWishlist" ("userId");
+ALTER TABLE "users_filmWishlists" ADD FOREIGN KEY ("filmWishlists_userId") REFERENCES "filmWishlists" ("userId");
 
 
-CREATE TABLE "users_followLog" (
+CREATE TABLE "users_followLogs" (
   "users_userId" serial,
-  "followLog_activeUserId" integer,
-  PRIMARY KEY ("users_userId", "followLog_activeUserId")
+  "followLogs_activeUserId" integer,
+  PRIMARY KEY ("users_userId", "followLogs_activeUserId")
 );
 
-ALTER TABLE "users_followLog" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
+ALTER TABLE "users_followLogs" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
 
-ALTER TABLE "users_followLog" ADD FOREIGN KEY ("followLog_activeUserId") REFERENCES "followLog" ("activeUserId");
+ALTER TABLE "users_followLogs" ADD FOREIGN KEY ("followLogs_activeUserId") REFERENCES "followLogs" ("activeUserId");
 
 
-CREATE TABLE "users_followLog(1)" (
+CREATE TABLE "users_followLogs(1)" (
   "users_userId" serial,
-  "followLog_followedUserId" integer,
-  PRIMARY KEY ("users_userId", "followLog_followedUserId")
+  "followLogs_followedUserId" integer,
+  PRIMARY KEY ("users_userId", "followLogs_followedUserId")
 );
 
-ALTER TABLE "users_followLog(1)" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
+ALTER TABLE "users_followLogs(1)" ADD FOREIGN KEY ("users_userId") REFERENCES "users" ("userId");
 
-ALTER TABLE "users_followLog(1)" ADD FOREIGN KEY ("followLog_followedUserId") REFERENCES "followLog" ("followedUserId");
+ALTER TABLE "users_followLogs(1)" ADD FOREIGN KEY ("followLogs_followedUserId") REFERENCES "followLogs" ("followedUserId");
