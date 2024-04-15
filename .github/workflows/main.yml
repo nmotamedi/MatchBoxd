@@ -18,7 +18,7 @@ jobs:
       AWS_ENV_NAME: ${{ secrets.AWS_ENV_NAME }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate deployment package
         run: |
@@ -31,7 +31,7 @@ jobs:
             -x "*/.env*" "*/node_modules/*"
 
       - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v21
+        uses: einaregilsson/beanstalk-deploy@v22
         with:
           aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
