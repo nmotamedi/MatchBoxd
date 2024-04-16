@@ -20,8 +20,7 @@ const db = new pg.Pool({
 const tmdbOptions = {
   headers: {
     accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NGRhMGY3ZDIwNWI1OTM5YmMyNmIzMDJjOGQ1ZGY2YiIsInN1YiI6IjY1ZDYyYmQyZmRmOGI3MDE3Y2M3MzQ3NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Mj2LqXvcsV3lOnKA1GbVNImYtMlWMxmxTs0I-exWKb8',
+    Authorization: `Bearer ${process.env.TMBD_TOKEN as string}`,
   },
 };
 
