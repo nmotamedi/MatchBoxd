@@ -3,7 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
   font-synthesis: none;
   text-rendering: optimizelegibility;
@@ -30,7 +29,6 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -44,6 +42,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+a:hover {
+  color: grey;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -51,7 +53,7 @@ button:focus-visible {
   }
 
   a:hover {
-    color: #747bff;
+    color: grey;
   }
 
   button {

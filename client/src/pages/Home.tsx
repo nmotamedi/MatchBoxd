@@ -14,7 +14,13 @@ export function Home() {
         const recentResp = await fetch('/api/films/recent');
         if (!recentResp.ok) throw new Error('Fetch failed');
         const recentList = await recentResp.json();
-        setRecentFilms(recentList);
+        const recentFilmDetails = recentList.map(async (film) => {
+          const filmResp = await fetch(`/api/films/${film.filmTMDbId}`);
+          if (!filmResp.ok) throw new Error('Fetch failed');
+          const filmDetail = (await filmResp.json()) as FilmDetails;
+          return filmDetail;
+        });
+        setRecentFilms(recentFilmDetails);
         const popResp = await fetch('/api/films/popular');
         if (!popResp.ok) throw new Error('Fetch failed');
         const popJSON = await popResp.json();

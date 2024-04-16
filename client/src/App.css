@@ -3,10 +3,6 @@
   width: 100vw;
 }
 
-.logo {
-  height: 6em;
-}
-
 .row {
   display: flex;
   justify-content: space-between;
@@ -16,40 +12,15 @@
   flex-basis: 50%;
 }
 
-.header-column {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.heading {
-  background-color: #350000;
-}
-
-.heading h3 {
-  color: white;
-  font-family: Barlow, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 1.2rem;
-}
-
-.heading a {
-  color: white;
-  font-family: Barlow, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 1.2rem;
-}
-
-.outlet-body {
-  background-color: #2e2e2e;
-  height: 100vh;
-}
-
 .filmCard {
   width: 14%;
   border-radius: 10px;
+  border: 2px solid rgba(128, 128, 128, 0.536);
+}
+
+.filmCard:hover {
+  border: 2px solid #350000;
+  cursor: pointer;
 }
 
 .outlet-body h5 {
