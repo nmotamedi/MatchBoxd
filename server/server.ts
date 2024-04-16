@@ -20,7 +20,7 @@ const db = new pg.Pool({
 const tmdbOptions = {
   headers: {
     accept: 'application/json',
-    Authorization: `Bearer ${process.env.TMBD_TOKEN as string}`,
+    Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
   },
 };
 
@@ -53,7 +53,7 @@ app.get('/api/films/recent', async (req, res, next) => {
 app.get(`/api/films/popular`, async (req, res, next) => {
   try {
     const popularFilmsResp = await fetch(
-      `https://api.themoviedb.org/3/movie/popular`,
+      `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`,
       tmdbOptions
     );
     if (!popularFilmsResp.ok) throw new Error('Unable to fetch films');

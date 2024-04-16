@@ -1,6 +1,5 @@
 #root {
   margin: 0 auto;
-  text-align: center;
   width: 100vw;
 }
 
@@ -46,4 +45,18 @@
 .outlet-body {
   background-color: #2e2e2e;
   height: 100vh;
+}
+
+.filmCard {
+  width: 14%;
+  border-radius: 10px;
+}
+
+.outlet-body h5 {
+  color: white;
+  font-family: Barlow, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-size: 1.2rem;
+  margin-bottom: 0;
 }
