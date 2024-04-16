@@ -1,0 +1,53 @@
+.logo {
+  height: 6em;
+}
+
+.logo:hover {
+  cursor: pointer;
+}
+
+.header-column {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.heading {
+  background-color: #350000;
+  padding-left: 2rem;
+}
+
+.heading h3 {
+  color: white;
+  font-family: Barlow, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1.2rem;
+}
+
+.heading h3:hover {
+  cursor: pointer;
+  color: grey;
+}
+
+.heading a.profile-button {
+  color: #870e0e;
+  background-color: #d9d9d9;
+  font-weight: 400;
+  font-size: 2rem;
+  padding: 1rem;
+  border: 1px solid #870e0e;
+  border-radius: 50%;
+}
+
+.heading a.profile-button:hover {
+  color: grey;
+  cursor: pointer;
+  background-color: #870e0e;
+}
+
+.outlet-body {
+  background-color: #2e2e2e;
+  height: 100vh;
+  padding: 2rem;
+}

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- Remove when used */
 import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
 import {
-  ClientError,
+  // ClientError,
   defaultMiddleware,
   errorMiddleware,
 } from './lib/index.js';
@@ -18,6 +17,13 @@ const db = new pg.Pool({
   },
 });
 
+const tmdbOptions = {
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+  },
+};
+
 const app = express();
 
 // Create paths for static directories
@@ -29,8 +35,48 @@ app.use(express.static(reactStaticDir));
 app.use(express.static(uploadsStaticDir));
 app.use(express.json());
 
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
+app.get('/api/films/recent', async (req, res, next) => {
+  try {
+    const sql = `
+    select *
+      from "filmLogs"
+      order by "dateWatched"
+      limit 6;
+    `;
+    const resp = await db.query(sql);
+    res.json(resp.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(`/api/films/popular`, async (req, res, next) => {
+  try {
+    const popularFilmsResp = await fetch(
+      `https://api.themoviedb.org/3/movie/popular?language=en-US&page=1`,
+      tmdbOptions
+    );
+    if (!popularFilmsResp.ok) throw new Error('Unable to fetch films');
+    const popularFilms = await popularFilmsResp.json();
+    res.json(popularFilms);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
+  try {
+    const { filmTMDbId } = req.params;
+    const filmDetailsResp = await fetch(
+      `https://api.themoviedb.org/3/movie/${filmTMDbId}`,
+      tmdbOptions
+    );
+    if (!filmDetailsResp.ok) throw new Error('Unable to fetch details');
+    const filmDetails = await filmDetailsResp.json();
+    res.json(filmDetails);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /*
