@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import './Heading.css';
+import { Button } from './Button';
 
 export function Heading() {
   return (
@@ -15,7 +16,7 @@ export function Heading() {
           <h3>WISHLIST</h3>
           <h3>COMPARISON</h3>
           <FaMagnifyingGlass color="white" />
-          <a className="log-button">LOG</a>
+          <Button text="LOG" />
           <a className="profile-button">NM</a>
         </div>
       </div>

@@ -30,21 +30,6 @@
   color: grey;
 }
 
-.heading a.log-button {
-  color: #870e0e;
-  background-color: #d9d9d9;
-  font-weight: 400;
-  padding: 0.5rem;
-  border: 1px solid #870e0e;
-  border-radius: 6px;
-}
-
-.heading a.log-button:hover {
-  color: grey;
-  cursor: pointer;
-  background-color: #870e0e;
-}
-
 .heading a.profile-button {
   color: #870e0e;
   background-color: #d9d9d9;
