@@ -118,16 +118,18 @@ export function Heading() {
       <Modal onClose={() => setSignUpIsOpen(false)} isOpen={signUpIsOpen}>
         <div className="row">
           <span onClick={() => setSignUpIsOpen(false)}>
-            <FaX />
+            <FaX color="white" />
           </span>
         </div>
         <h2>JOIN MATCHBOXD</h2>
         <form onSubmit={handleSignUpSubmit}>
           <h4>Username</h4>
-          <input name="username" type="text" />
+          <input id="sign-up-username" name="username" type="text" />
           <h4>Password</h4>
-          <input name="password" type="password" />
-          <Button text="Sign Up" />
+          <input id="sign-up-password" name="password" type="password" />
+          <div>
+            <Button text="Sign Up" />
+          </div>
         </form>
       </Modal>
     </>

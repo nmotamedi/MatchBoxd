@@ -2,8 +2,44 @@ dialog {
   background-color: #8c7b6f;
   border: none;
   border-radius: 6px;
+  width: 40%;
+  padding: 2rem;
 }
 
 dialog::backdrop {
   background: rgba(23, 22, 22, 0.955);
+}
+
+dialog h2 {
+  font-family: Barlow, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-size: 1.5rem;
+  color: white;
+}
+
+dialog input {
+  width: 90%;
+  margin-bottom: 0.5rem;
+}
+
+dialog input#sign-up-password {
+  width: 70%;
+}
+
+dialog .row {
+  justify-content: flex-end;
+}
+
+dialog h4 {
+  font-family: Barlow, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1rem;
+  color: white;
+  margin: 0;
+}
+
+dialog button {
+  margin-top: 3rem;
 }

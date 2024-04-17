@@ -56,11 +56,11 @@ export function Home() {
         style={
           !user
             ? {
-                background: `center/100% no-repeat linear-gradient(
+                background: `center/cover no-repeat linear-gradient(
     to bottom,
     rgb(0 0 0 / 5%),
-    rgb(0 0 0 / 95%)
-  ), top/100% no-repeat url('https://image.tmdb.org/t/p/w1280/${popFilms[0].backdrop_path}')`,
+    rgb(0 0 0 / 80%)
+  ), top/cover no-repeat url('https://image.tmdb.org/t/p/w1280/${popFilms[0].backdrop_path}')`,
                 height: '450px',
                 width: '100%',
                 backgroundSize: 'cover',
