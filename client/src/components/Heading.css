@@ -47,7 +47,5 @@
 }
 
 .outlet-body {
-  background-color: #2e2e2e;
-  height: 100vh;
-  padding: 2rem;
+  height: 100%;
 }
