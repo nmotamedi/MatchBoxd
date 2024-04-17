@@ -52,7 +52,7 @@ p {
 .poster-column > img {
   border-radius: 10px;
   border: 2px solid rgba(128, 128, 128, 0.536);
-  margin-top: 2.5rem;
+  margin-top: 1rem;
 }
 
 .tagline {

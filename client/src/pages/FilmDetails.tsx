@@ -37,14 +37,20 @@ export function FilmDetailPage() {
   return (
     <>
       <div
-        className="row details-row"
+        className="img-container"
         style={{
           background: `center/100% no-repeat linear-gradient(
     to bottom,
     rgb(0 0 0 / 5%),
     rgb(0 0 0 / 95%)
-  ), center/100% no-repeat url('https://image.tmdb.org/t/p/w1280/${filmDetails.backdrop_path}')`,
-        }}>
+  ), top/100% no-repeat url('https://image.tmdb.org/t/p/w1280/${filmDetails.backdrop_path}')`,
+          height: '500px',
+          width: '100%',
+          backgroundSize: 'cover',
+        }}></div>
+      <div
+        className="row details-row"
+        style={{ position: 'relative', top: '-7rem' }}>
         <div className="poster-column">
           <img
             src={`https://image.tmdb.org/t/p/w780/${filmDetails.poster_path}`}

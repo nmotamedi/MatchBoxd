@@ -10,6 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  width: 100%;
 }
 
 .heading {
@@ -38,6 +39,9 @@
   padding: 1rem;
   border: 1px solid #870e0e;
   border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  text-align: center;
 }
 
 .heading a.profile-button:hover {
@@ -48,4 +52,39 @@
 
 .outlet-body {
   height: 100%;
+}
+
+input {
+  border-radius: 6px;
+  height: 1.2rem;
+  border: none;
+}
+
+input::placeholder {
+  font-family: Barlow, sans-serif;
+  font-weight: 450;
+  font-style: normal;
+  font-size: 1rem;
+}
+
+.sign-in-form {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #ee142d43;
+  height: 100%;
+  border-radius: 0 0 0 6px;
+}
+
+.sign-in-form input {
+  margin-right: 2rem;
+  margin-left: 1rem;
+}
+
+#sign-in-password::placeholder {
+  color: white;
+}
+
+.sign-in-form::backdrop {
+  background: rgba(23, 22, 22, 0.955);
 }

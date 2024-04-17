@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Catalog } from '../components/Catalog';
 import { FilmDetails } from '../App';
+import { useUser } from '../components/useUser';
+import './Home.css';
 
 export function Home() {
   const [recentFilms, setRecentFilms] = useState<FilmDetails[]>();
   const [popFilms, setPopFilms] = useState<FilmDetails[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
+  const { user } = useUser();
 
   useEffect(() => {
     async function getFilms() {
@@ -48,20 +51,49 @@ export function Home() {
   }
   return (
     <>
-      {recentFilms.length !== 0 ? (
-        <Catalog
-          text="RECENT COMMUNITY ACTIVITY"
-          cards={recentFilms}
-          limit={6}
-        />
-      ) : (
-        <div>No Recent Listing</div>
-      )}
-      {popFilms.length !== 0 ? (
-        <Catalog text="POPULAR" cards={popFilms} limit={6} />
-      ) : (
-        <div>No Popular Listings</div>
-      )}
+      <div
+        className="img-container"
+        style={
+          !user
+            ? {
+                background: `center/100% no-repeat linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 5%),
+    rgb(0 0 0 / 95%)
+  ), top/100% no-repeat url('https://image.tmdb.org/t/p/w1280/${popFilms[0].backdrop_path}')`,
+                height: '450px',
+                width: '100%',
+                backgroundSize: 'cover',
+              }
+            : { background: 'none' }
+        }></div>
+      <div
+        className="home-container"
+        style={!user ? { position: 'relative', top: '-10.5rem' } : {}}>
+        {user && recentFilms.length !== 0 && (
+          <Catalog
+            text="RECENT COMMUNITY ACTIVITY"
+            cards={recentFilms}
+            limit={6}
+          />
+        )}
+
+        {user && recentFilms.length === 0 && <div>No Recent Listing</div>}
+        {!user && (
+          <div className="row">
+            <div className="column-full">
+              <h1>Track films you've watched.</h1>
+              <h1>Save those you want to see.</h1>
+              <h1>Find your most compatible</h1>
+            </div>
+          </div>
+        )}
+        {popFilms.length !== 0 ? (
+          <Catalog text="POPULAR" cards={popFilms} limit={6} />
+        ) : (
+          <div>No Popular Listings</div>
+        )}
+      </div>
     </>
   );
 }

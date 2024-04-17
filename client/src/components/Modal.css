@@ -1,0 +1,9 @@
+dialog {
+  background-color: #8c7b6f;
+  border: none;
+  border-radius: 6px;
+}
+
+dialog::backdrop {
+  background: rgba(23, 22, 22, 0.955);
+}
