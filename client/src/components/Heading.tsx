@@ -1,13 +1,14 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import './Heading.css';
 import { Button } from './Button';
 
 export function Heading() {
+  const nav = useNavigate();
   return (
     <>
       <div className="row heading">
-        <div className="column-half">
+        <div className="column-half" onClick={() => nav('/')}>
           <img className="logo" src="/MatchBoxd_Logo.png" alt="Logo" />
           <img className="logo" src="/MatchBoxd_Name.png" alt="Title Logo" />
         </div>

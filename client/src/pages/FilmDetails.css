@@ -1,0 +1,60 @@
+.poster-column {
+  flex-basis: 15%;
+}
+
+.information-column {
+  flex-basis: 50%;
+}
+
+.details-row {
+  justify-content: space-around;
+  font-family: Barlow, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.2rem;
+  color: #d9d9d9;
+}
+
+.information-column > .row {
+  justify-content: flex-start;
+}
+
+.rating-column {
+  flex-basis: 25%;
+  align-content: center;
+}
+
+.job-title {
+  text-transform: uppercase;
+}
+
+h2 {
+  font-family: 'Bona Nova', serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.cast-crew-row {
+  font-size: 0.84rem;
+}
+
+h4 {
+  font-weight: 200;
+  margin-top: 0;
+}
+
+p {
+  font-weight: 300;
+}
+
+.poster-column > img {
+  border-radius: 10px;
+  border: 2px solid rgba(128, 128, 128, 0.536);
+  margin-top: 2.5rem;
+}
+
+.tagline {
+  text-transform: uppercase;
+}

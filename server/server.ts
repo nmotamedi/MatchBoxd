@@ -2,10 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
 import {
-  // ClientError,
+  ClientError,
   defaultMiddleware,
   errorMiddleware,
 } from './lib/index.js';
+import fetch from 'node-fetch';
 
 const connectionString =
   process.env.DATABASE_URL ||
@@ -58,7 +59,7 @@ app.get(`/api/films/popular`, async (req, res, next) => {
     );
     if (!popularFilmsResp.ok) throw new Error('Unable to fetch films');
     const popularFilms = await popularFilmsResp.json();
-    res.json(popularFilms);
+    res.send(popularFilms);
   } catch (err) {
     next(err);
   }
@@ -67,13 +68,23 @@ app.get(`/api/films/popular`, async (req, res, next) => {
 app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
   try {
     const { filmTMDbId } = req.params;
+    if (!Number.isInteger(+filmTMDbId)) {
+      throw new ClientError(400, 'filmId must be a number');
+    }
     const filmDetailsResp = await fetch(
       `https://api.themoviedb.org/3/movie/${filmTMDbId}`,
       tmdbOptions
     );
     if (!filmDetailsResp.ok) throw new Error('Unable to fetch details');
-    const filmDetails = await filmDetailsResp.json();
-    res.json(filmDetails);
+    const filmDetails = (await filmDetailsResp.json()) as object;
+    const filmCreditsResp = await fetch(
+      `https://api.themoviedb.org/3/movie/${filmTMDbId}/credits`,
+      tmdbOptions
+    );
+    if (!filmCreditsResp.ok) throw new Error('Unable to fetch details');
+    const filmCredits = (await filmCreditsResp.json()) as object;
+    const fullDetails = { ...filmDetails, ...filmCredits };
+    res.json(fullDetails);
   } catch (err) {
     next(err);
   }
