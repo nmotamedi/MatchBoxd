@@ -1,7 +1,12 @@
 import { FaEye, FaThumbsUp, FaUserClock, FaStar } from 'react-icons/fa6';
 import './RatingComponent.css';
 
-export function RatingComponent() {
+type Prop = {
+  onClick: () => void;
+  watched: boolean;
+};
+
+export function RatingComponent({ onClick, watched }: Prop) {
   return (
     <div className="rating-container">
       <div className="row rating-row">
@@ -13,7 +18,9 @@ export function RatingComponent() {
           <FaThumbsUp color={'#6D6056'} size={'3rem'} />
           <h5>Like</h5>
         </div>
-        <div className="column-third">
+        <div
+          onClick={onClick}
+          className={watched ? 'column-third selected' : 'column-third'}>
           <FaUserClock color={'#6D6056'} size={'3rem'} />
           <h5>Watchlist</h5>
         </div>

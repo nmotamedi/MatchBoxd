@@ -1,6 +1,7 @@
 .rating-container {
   background-color: #8c7b6f;
   border-radius: 6px;
+  margin-top: 4.5rem;
 }
 
 .rating-row {
@@ -34,4 +35,12 @@ h5 {
 svg > path:hover {
   color: #4a1b1b;
   cursor: pointer;
+}
+
+.rating-row .selected svg > path {
+  color: #4a1b1b;
+}
+
+.rating-row .selected svg > path:hover {
+  color: #6d6056;
 }

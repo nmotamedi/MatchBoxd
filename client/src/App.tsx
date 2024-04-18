@@ -7,6 +7,7 @@ import { FilmDetailPage } from './pages/FilmDetails';
 import { NotFound } from './pages/NotFound';
 import { User, UserProvider } from './components/UserContext';
 import { saveToken } from './lib/data';
+import { WishlistPage } from './pages/WishlistPage';
 
 export type FilmDetails = {
   backdrop_path: string;
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/" element={<Heading />}>
             <Route index element={<Home />} />
             <Route path="/film/:filmId" element={<FilmDetailPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

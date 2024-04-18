@@ -10,8 +10,8 @@ type Props = {
 export function Catalog({ text, cards, limit }: Props) {
   const nav = useNavigate();
 
-  const cardWrapper: JSX.Element[] = [];
-  for (let i = 0; i < limit; i++) {
+  const cardArray: JSX.Element[] = [];
+  for (let i = 0; i < limit && i < cards.length; i++) {
     const card = cards[i];
     const singleCard = (
       <img
@@ -22,13 +22,26 @@ export function Catalog({ text, cards, limit }: Props) {
         alt={card.title}
       />
     );
-    cardWrapper.push(singleCard);
+    cardArray.push(singleCard);
+  }
+  if (cardArray.length % 18 && cardArray.length < limit) {
+    for (let i = cardArray.length % 18; i < 18; i++) {
+      const singleCard = (
+        <img
+          className="filmCard"
+          key={`tempCard ${i}`}
+          src={`https://www.wallpaperstogo.com/images/product/large/247374.jpg`}
+          alt="Placeholder Card"
+        />
+      );
+      cardArray.push(singleCard);
+    }
   }
   return (
     <div style={{ padding: '2rem' }}>
       <h5>{text}</h5>
       <hr />
-      <div className="row">{cardWrapper}</div>
+      <div className="row filmCard-row">{cardArray}</div>
     </div>
   );
 }
