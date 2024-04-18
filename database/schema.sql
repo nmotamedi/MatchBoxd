@@ -8,9 +8,9 @@ create schema "public";
 
 CREATE TABLE "users" (
   "userId" serial PRIMARY KEY,
-  "email" text UNIQUE NOT NULL,
+  "username" text UNIQUE NOT NULL,
   "hashedPassword" text NOT NULL,
-  "joinedAt" timestamp NOT NULL
+  "joinedAt" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "filmLogs" (
@@ -21,22 +21,22 @@ CREATE TABLE "filmLogs" (
   "liked" boolean,
   "userId" integer NOT NULL,
   "dateWatched" date NOT NULL,
-  "createdAt" timestamptz NOT NULL,
-  "updatedAt" timestamptz NOT NULL
+  "createdAt" timestamptz NOT NULL DEFAULT (now()),
+  "updatedAt" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "filmWishlists" (
   "filmWishlistId" serial PRIMARY KEY,
   "filmTMDbId" integer NOT NULL,
   "userId" integer NOT NULL,
-  "createdAt" timestamptz NOT NULL
+  "createdAt" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "followLogs" (
   "followLogId" serial PRIMARY KEY,
   "activeUserId" integer NOT NULL,
   "followedUserId" integer NOT NULL,
-  "followDate" timestamptz NOT NULL
+  "followDate" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "users_filmLogs" (

@@ -1,0 +1,13 @@
+.home-container h1 {
+  font-family: 'Bona Nova', serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 2.5rem;
+  color: white;
+  line-height: 1rem;
+}
+
+.column-full {
+  flex-basis: 100%;
+  text-align: center;
+}
