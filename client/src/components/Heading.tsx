@@ -75,7 +75,7 @@ export function Heading() {
           {user && (
             <>
               <h3>REVIEWS</h3>
-              <h3>WISHLIST</h3>
+              <h3 onClick={() => nav('/wishlist')}>WISHLIST</h3>
               <h3>COMPARISON</h3>
               <FaMagnifyingGlass color="white" />
               <Button text="LOG" />

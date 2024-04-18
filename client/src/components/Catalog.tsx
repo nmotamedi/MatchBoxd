@@ -11,7 +11,7 @@ export function Catalog({ text, cards, limit }: Props) {
   const nav = useNavigate();
 
   const cardWrapper: JSX.Element[] = [];
-  for (let i = 0; i < limit; i++) {
+  for (let i = 0; i < limit && i < cards.length; i++) {
     const card = cards[i];
     const singleCard = (
       <img

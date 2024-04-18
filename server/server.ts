@@ -154,7 +154,7 @@ app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
   }
 });
 
-app.get('/api/wishlists/', authMiddleware, async (req, res, next) => {
+app.get('/api/wishlists', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
     select *
@@ -180,7 +180,8 @@ app.get(
       const sql = `
     select *
     from "filmWishlists"
-    where "userId" = $1 and "filmTMDbId" = $2;
+    where "userId" = $1 and "filmTMDbId" = $2
+    order by "createdAt" desc;
     `;
       const params = [req.user?.userId, filmTMDbId];
       const resp = await db.query(sql, params);
