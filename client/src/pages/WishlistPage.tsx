@@ -31,7 +31,6 @@ export function WishlistPage() {
         const wishlistDetails = await Promise.all(
           promises.map((p) => p.json())
         );
-        console.log(wishlistDetails);
         setWishlistFilms(wishlistDetails);
       } catch (err) {
         setError(err);
@@ -67,7 +66,7 @@ export function WishlistPage() {
       )}
       {wishlistFilms.length === 0 && (
         <div style={{ color: 'white' }}>
-          Please add a film to your wihslist!
+          Please add a film to your wishlist!
         </div>
       )}
     </>
