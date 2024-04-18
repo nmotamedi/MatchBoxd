@@ -3,12 +3,16 @@ import { useParams } from 'react-router-dom';
 import { FilmDetails } from '../App';
 import './FilmDetails.css';
 import { RatingComponent } from '../components/RatingComponent';
+import { readToken } from '../lib/data';
+import { useUser } from '../components/useUser';
 
 export function FilmDetailPage() {
   const { filmId } = useParams();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
   const [filmDetails, setFilmDetails] = useState<FilmDetails>();
+  const [isOnWatchlist, setIsOnWatchList] = useState(false);
 
   useEffect(() => {
     async function getDetails() {
@@ -24,7 +28,32 @@ export function FilmDetailPage() {
       }
     }
     getDetails();
-  }, [filmId]);
+
+    async function getWishlist() {
+      if (user) {
+        try {
+          const wishlistReq = {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${readToken()}`,
+            },
+          };
+          const wishlistResp = await fetch(
+            `/api/wishlists/${filmId}`,
+            wishlistReq
+          );
+          if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
+          const [isWishlist] = await wishlistResp.json();
+          if (isWishlist) {
+            setIsOnWatchList(true);
+          }
+        } catch (err) {
+          alert('wishlist error');
+        }
+      }
+    }
+    getWishlist();
+  }, [filmId, user]);
 
   if (isLoading) {
     return <h3 style={{ color: 'white' }}>Loading...</h3>;
@@ -32,6 +61,36 @@ export function FilmDetailPage() {
 
   if (error || !filmDetails) {
     return <h3 style={{ color: 'white' }}>Film not found!</h3>;
+  }
+
+  async function handleAddToWishlist() {
+    if (!user) {
+      alert('Please sign up or log in to save!');
+    } else {
+      try {
+        let req = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${readToken()}`,
+          },
+        };
+        if (isOnWatchlist) {
+          req = {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${readToken()}`,
+            },
+          };
+        }
+        const resp = await fetch(`/api/wishlists/${filmId}`, req);
+        if (!resp.ok) throw new Error(`${resp.status}`);
+        setIsOnWatchList(!isOnWatchlist);
+      } catch (err) {
+        alert(`Error adding to wishlist: ${err}`);
+      }
+    }
   }
 
   return (
@@ -84,7 +143,10 @@ export function FilmDetailPage() {
           </div>
         </div>
         <div className="rating-column">
-          <RatingComponent />
+          <RatingComponent
+            watched={isOnWatchlist}
+            onClick={() => handleAddToWishlist()}
+          />
         </div>
       </div>
     </>

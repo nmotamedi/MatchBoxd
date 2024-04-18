@@ -3,6 +3,7 @@ import express from 'express';
 import pg from 'pg';
 import {
   ClientError,
+  authMiddleware,
   defaultMiddleware,
   errorMiddleware,
   // authMiddleware,
@@ -152,6 +153,93 @@ app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
     next(err);
   }
 });
+
+app.get('/api/wishlists/', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+    select *
+    from "filmWishlists"
+    where "userId" = $1;
+    `;
+    const resp = await db.query(sql, [req.user?.userId]);
+    res.json(resp.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(
+  '/api/wishlists/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const sql = `
+    select *
+    from "filmWishlists"
+    where "userId" = $1 and "filmTMDbId" = $2;
+    `;
+      const params = [req.user?.userId, filmTMDbId];
+      const resp = await db.query(sql, params);
+      res.json(resp.rows);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.post(
+  '/api/wishlists/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const sql = `
+    insert into "filmWishlists"("filmTMDbId", "userId")
+      values ($1, $2)
+      returning *;
+    `;
+      const param = [filmTMDbId, req.user?.userId];
+      const resp = await db.query(sql, param);
+      const [row] = resp.rows;
+      if (!row) throw new ClientError(404, `filmId ${filmTMDbId} not found`);
+      res.status(201).json(row);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.delete(
+  '/api/wishlists/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, `filmId must be a number`);
+      }
+      const sql = `
+      delete from "filmWishlists"
+        where "userId" = $1 and "filmTMDbId" = $2
+        returning *;
+      `;
+      const params = [req.user?.userId, filmTMDbId];
+      const resp = await db.query(sql, params);
+      const [row] = resp.rows;
+      if (!row) throw new ClientError(404, `filmId ${filmTMDbId} not found`);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 /*
  * Middleware that handles paths that aren't handled by static middleware

@@ -9,7 +9,7 @@ import { FaX } from 'react-icons/fa6';
 
 export function Heading() {
   const nav = useNavigate();
-  const { user, handleSignIn } = useUser();
+  const { user, handleSignIn, handleSignOut } = useUser();
   const [signInIsOpen, setSignInIsOpen] = useState(false);
   const [signUpIsOpen, setSignUpIsOpen] = useState(false);
 
@@ -36,8 +36,6 @@ export function Heading() {
       setSignInIsOpen(true);
     } catch (err) {
       alert(`Error registering user: ${err}`);
-    } finally {
-      event.currentTarget.reset();
     }
   }
 
@@ -81,7 +79,9 @@ export function Heading() {
               <h3>COMPARISON</h3>
               <FaMagnifyingGlass color="white" />
               <Button text="LOG" />
-              <a className="profile-button">{`${user.username[0]}`}</a>
+              <a
+                className="profile-button"
+                onClick={handleSignOut}>{`${user.username[0]}`}</a>
             </>
           )}
           {!user && !signInIsOpen && (

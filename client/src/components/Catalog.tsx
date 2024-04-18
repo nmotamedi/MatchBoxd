@@ -28,7 +28,7 @@ export function Catalog({ text, cards, limit }: Props) {
     <div style={{ padding: '2rem' }}>
       <h5>{text}</h5>
       <hr />
-      <div className="row">{cardWrapper}</div>
+      <div className="row filmCard-row">{cardWrapper}</div>
     </div>
   );
 }

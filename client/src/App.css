@@ -6,6 +6,11 @@
 .row {
   display: flex;
   justify-content: space-between;
+  align-content: space-between;
+}
+
+.row.filmCard-row {
+  flex-wrap: wrap;
 }
 
 .column-half {
