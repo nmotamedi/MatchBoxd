@@ -21,6 +21,7 @@
   width: 14%;
   border-radius: 10px;
   border: 2px solid rgba(128, 128, 128, 0.536);
+  margin-bottom: 3rem;
 }
 
 .filmCard:hover {

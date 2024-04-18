@@ -24,8 +24,8 @@ export function Catalog({ text, cards, limit }: Props) {
     );
     cardArray.push(singleCard);
   }
-  if (cardArray.length % 6) {
-    for (let i = cardArray.length % 6; i < 6; i++) {
+  if (cardArray.length % 18 && cardArray.length < limit) {
+    for (let i = cardArray.length % 18; i < 18; i++) {
       const singleCard = (
         <img
           className="filmCard"
