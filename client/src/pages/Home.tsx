@@ -78,7 +78,9 @@ export function Home() {
           />
         )}
 
-        {user && recentFilms.length === 0 && <div>No Recent Listing</div>}
+        {user && recentFilms.length === 0 && (
+          <div style={{ color: 'white' }}>No Recent Listing</div>
+        )}
         {!user && (
           <div className="row">
             <div className="column-full">
