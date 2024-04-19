@@ -31,19 +31,6 @@
   color: grey;
 }
 
-.heading a.profile-button {
-  color: #870e0e;
-  background-color: #d9d9d9;
-  font-weight: 400;
-  font-size: 2rem;
-  padding: 1rem;
-  border: 1px solid #870e0e;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  text-align: center;
-}
-
 .heading a.profile-button:hover {
   color: grey;
   cursor: pointer;

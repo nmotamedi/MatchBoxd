@@ -23,6 +23,22 @@ type Auth = {
   password: string;
 };
 
+type FilmDetails = {
+  backdrop_path: string;
+  id: number;
+  overview: string;
+  tagline: string;
+  poster_path: string;
+  release_date: string;
+  title: string;
+  cast: { name: string }[];
+  crew: { name: string; job: string }[];
+};
+
+type FilmQueryResults = {
+  results: FilmDetails[];
+};
+
 const hashKey = process.env.TOKEN_SECRET;
 if (!hashKey) throw new Error('TOKEN_SECRET not found in .env');
 
@@ -235,6 +251,107 @@ app.delete(
       const resp = await db.query(sql, params);
       const [row] = resp.rows;
       if (!row) throw new ClientError(404, `filmId ${filmTMDbId} not found`);
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get(`/api/search/:query`, async (req, res, next) => {
+  try {
+    const { query } = req.params;
+    if (query === '') throw new ClientError(400, 'Query is required');
+    const sql = `
+    select "username", "userId"
+    from "users"
+    where lower("username") like $1;
+    `;
+    const userQueryResp = await db.query(sql, [`%${query}%`]);
+    const userResults = userQueryResp.rows;
+    const filmQueryResp = await fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`,
+      tmdbOptions
+    );
+    if (!filmQueryResp.ok) throw new Error('Unable to fetch films');
+    const filmJSON = (await filmQueryResp.json()) as FilmQueryResults;
+    const filmResults = filmJSON.results as FilmDetails[];
+    const queryResponse = { userResults, filmResults };
+    res.json(queryResponse);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(
+  '/api/follow/:followedUserId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { followedUserId } = req.params;
+      if (!followedUserId) {
+        throw new ClientError(400, 'userId and followedUserId are required.');
+      }
+      const sql = `
+    select "followedUserId"
+    from "followLogs"
+    where "activeUserId" = $1 and "followedUserId" = $2;
+    `;
+      const resp = await db.query(sql, [req.user?.userId, followedUserId]);
+      const rows = resp.rows;
+      res.json(rows);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.post(
+  '/api/follow/:followedUserId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { followedUserId } = req.params;
+      const activeUserId = req.user?.userId;
+      if (!activeUserId || !followedUserId) {
+        throw new ClientError(400, 'userId and followedUserId are required.');
+      }
+      const sql = `
+    insert into "followLogs" ("activeUserId", "followedUserId")
+      values ($1, $2)
+      returning *;
+    `;
+      const params = [activeUserId, followedUserId];
+      const resp = await db.query(sql, params);
+      const [row] = resp.rows;
+      res.status(201).json(row);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.delete(
+  '/api/follow/:followedUserId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { followedUserId } = req.params;
+      const activeUserId = req.user?.userId;
+      if (!activeUserId || !followedUserId) {
+        throw new ClientError(400, 'userId and followedUserId are required.');
+      }
+      const sql = `
+    delete from "followLogs"
+    where "activeUserId" = $1 and "followedUserId" = $2
+    returning *;
+    `;
+      const params = [activeUserId, followedUserId];
+      const resp = await db.query(sql, params);
+      const [row] = resp.rows;
+      if (!row) {
+        throw new ClientError(404, `Follow log not found`);
+      }
       res.sendStatus(204);
     } catch (err) {
       next(err);

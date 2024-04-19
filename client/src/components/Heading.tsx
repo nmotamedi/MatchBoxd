@@ -6,6 +6,7 @@ import { useUser } from '../components/useUser';
 import { Modal } from './Modal';
 import { useState, type FormEvent } from 'react';
 import { FaX } from 'react-icons/fa6';
+import { ProfileIcon } from './ProfileIcon';
 
 export function Heading() {
   const nav = useNavigate();
@@ -31,7 +32,6 @@ export function Heading() {
       alert(
         `Successfully registered ${user.username} as userId ${user.userId}`
       );
-      nav('/');
       setSignUpIsOpen(false);
       setSignInIsOpen(true);
     } catch (err) {
@@ -57,7 +57,6 @@ export function Heading() {
       }
       const { user, token } = await resp.json();
       handleSignIn(user, token);
-      nav('/');
       setSignInIsOpen(false);
     } catch (err) {
       alert(`Error signing in: ${err}`);
@@ -79,9 +78,7 @@ export function Heading() {
               <h3>COMPARISON</h3>
               <FaMagnifyingGlass color="white" />
               <Button text="LOG" />
-              <a
-                className="profile-button"
-                onClick={handleSignOut}>{`${user.username[0]}`}</a>
+              <ProfileIcon onClick={handleSignOut} text={user.username[0]} />
             </>
           )}
           {!user && !signInIsOpen && (
