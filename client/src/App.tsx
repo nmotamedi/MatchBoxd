@@ -8,6 +8,7 @@ import { NotFound } from './pages/NotFound';
 import { User, UserProvider } from './components/UserContext';
 import { saveToken } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
+import { SearchPage } from './pages/SearchPage';
 
 export type FilmDetails = {
   backdrop_path: string;
@@ -17,8 +18,8 @@ export type FilmDetails = {
   poster_path: string;
   release_date: string;
   title: string;
-  cast: { name: string }[];
-  crew: { name: string; job: string }[];
+  cast?: { name: string }[];
+  crew?: { name: string; job: string }[];
 };
 
 export default function App() {
@@ -45,6 +46,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="/film/:filmId" element={<FilmDetailPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/search/:query" element={<SearchPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

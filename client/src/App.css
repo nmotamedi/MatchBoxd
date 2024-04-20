@@ -37,3 +37,79 @@
   font-size: 1.2rem;
   margin-bottom: 0;
 }
+
+.outlet-body h6 {
+  color: white;
+  font-family: Barlow, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1rem;
+}
+
+.search {
+  justify-content: flex-start;
+  align-items: end;
+}
+
+.search h6:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.search h6.selected {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.search h6.selected:hover {
+  cursor: default;
+}
+
+a.profile-button {
+  color: #870e0e;
+  background-color: #d9d9d9;
+  font-weight: 400;
+  font-size: 2rem;
+  padding: 1rem;
+  border: 1px solid #870e0e;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+}
+
+.search-result-wrapper {
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.outlet-body .search h4 {
+  color: white;
+  font-family: Barlow, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1rem;
+}
+
+.search-result-info:hover {
+  cursor: pointer;
+}
+
+.search-result-info:hover h4 {
+  font-weight: bold;
+}
+
+.search-result-info:hover a {
+  background-color: #870e0e;
+  color: grey;
+}
+
+.search-result-info:hover img {
+  border-color: #870e0e;
+}

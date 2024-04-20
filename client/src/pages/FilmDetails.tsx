@@ -124,7 +124,7 @@ export function FilmDetailPage() {
             </h4>
             &nbsp;
             <h4>
-              Directed by <b>{filmDetails.crew[0].name}</b>
+              Directed by <b>{filmDetails.crew![0].name}</b>
             </h4>
           </div>
           <h4 className="tagline">{filmDetails.tagline}</h4>
@@ -133,12 +133,16 @@ export function FilmDetailPage() {
             <ul>
               {' '}
               CAST
-              {castCrewList(filmDetails.cast)}
+              {filmDetails.cast &&
+                filmDetails.cast.length >= 4 &&
+                castCrewList(filmDetails.cast)}
             </ul>
             <ul>
               {' '}
               CREW
-              {castCrewList(filmDetails.crew)}
+              {filmDetails.crew &&
+                filmDetails.crew.length >= 4 &&
+                castCrewList(filmDetails.crew)}
             </ul>
           </div>
         </div>

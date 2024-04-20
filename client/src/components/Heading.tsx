@@ -6,12 +6,15 @@ import { useUser } from '../components/useUser';
 import { Modal } from './Modal';
 import { useState, type FormEvent } from 'react';
 import { FaX } from 'react-icons/fa6';
+import { ProfileIcon } from './ProfileIcon';
+import { Search } from './Search';
 
 export function Heading() {
   const nav = useNavigate();
   const { user, handleSignIn, handleSignOut } = useUser();
   const [signInIsOpen, setSignInIsOpen] = useState(false);
   const [signUpIsOpen, setSignUpIsOpen] = useState(false);
+  const [searchIsOpen, setSearchIsOpen] = useState(false);
 
   async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,10 +31,7 @@ export function Heading() {
         throw new Error(`Fetch error: ${res.status}`);
       }
       const user = await res.json();
-      alert(
-        `Successfully registered ${user.username} as userId ${user.userId}`
-      );
-      nav('/');
+      alert(`Successfully registered ${user.username}! Please log in`);
       setSignUpIsOpen(false);
       setSignInIsOpen(true);
     } catch (err) {
@@ -57,7 +57,6 @@ export function Heading() {
       }
       const { user, token } = await resp.json();
       handleSignIn(user, token);
-      nav('/');
       setSignInIsOpen(false);
     } catch (err) {
       alert(`Error signing in: ${err}`);
@@ -72,24 +71,31 @@ export function Heading() {
           <img className="logo" src="/MatchBoxd_Name.png" alt="Title Logo" />
         </div>
         <div className="header-column column-half">
-          {user && (
+          {user && !searchIsOpen && (
             <>
               <h3>REVIEWS</h3>
               <h3 onClick={() => nav('/wishlist')}>WISHLIST</h3>
               <h3>COMPARISON</h3>
-              <FaMagnifyingGlass color="white" />
+              <span onClick={() => setSearchIsOpen(true)}>
+                <FaMagnifyingGlass color="white" />
+              </span>
               <Button text="LOG" />
-              <a
-                className="profile-button"
-                onClick={handleSignOut}>{`${user.username[0]}`}</a>
+              <ProfileIcon onClick={handleSignOut} text={user.username[0]} />
+            </>
+          )}
+          {user && searchIsOpen && (
+            <>
+              <span onClick={() => setSearchIsOpen(false)}>
+                <FaX color="white" />
+              </span>
+              <Search />
             </>
           )}
           {!user && !signInIsOpen && (
             <>
               <h3 onClick={() => setSignInIsOpen(true)}>SIGN IN</h3>
               <h3 onClick={() => setSignUpIsOpen(true)}>CREATE ACCOUNT</h3>
-              <input id="search" type="text" placeholder="Search" />
-              <Button text="Search" />
+              <Search />
             </>
           )}
           {!user && signInIsOpen && (
