@@ -2,8 +2,13 @@ import './Button.css';
 
 type Prop = {
   text: string;
+  onClick?: () => void;
 };
 
-export function Button({ text }: Prop) {
-  return <button className="button">{text}</button>;
+export function Button({ text, onClick }: Prop) {
+  return (
+    <button onClick={onClick} className="button">
+      {text}
+    </button>
+  );
 }

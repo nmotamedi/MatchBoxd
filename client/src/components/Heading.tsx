@@ -7,6 +7,7 @@ import { Modal } from './Modal';
 import { useState, type FormEvent } from 'react';
 import { FaX } from 'react-icons/fa6';
 import { ProfileIcon } from './ProfileIcon';
+import { Search } from './Search';
 
 export function Heading() {
   const nav = useNavigate();
@@ -85,8 +86,7 @@ export function Heading() {
             <>
               <h3 onClick={() => setSignInIsOpen(true)}>SIGN IN</h3>
               <h3 onClick={() => setSignUpIsOpen(true)}>CREATE ACCOUNT</h3>
-              <input id="search" type="text" placeholder="Search" />
-              <Button text="Search" />
+              <Search />
             </>
           )}
           {!user && signInIsOpen && (
