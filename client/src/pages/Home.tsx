@@ -17,13 +17,10 @@ export function Home() {
         const recentResp = await fetch('/api/films/recent');
         if (!recentResp.ok) throw new Error('Fetch failed');
         const recentList = await recentResp.json();
-        const promises = await Promise.all(
-          recentList.map((film) => fetch(`/api/films/${film.filmTMDbId}`))
-        );
-        const recentFilmDetails = await Promise.all(
-          promises.map((p) => p.json())
-        );
-        setRecentFilms(recentFilmDetails);
+        const formRecentList = recentList.map((recent) => {
+          return { id: recent.filmTMDbId, poster_path: recent.filmPosterPath };
+        });
+        setRecentFilms(formRecentList);
         const popResp = await fetch('/api/films/popular');
         if (!popResp.ok) throw new Error('Fetch failed');
         const popJSON = await popResp.json();

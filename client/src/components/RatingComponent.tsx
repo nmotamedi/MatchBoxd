@@ -22,7 +22,7 @@ export function RatingComponent({ onClick, watched }: Prop) {
           onClick={onClick}
           className={watched ? 'column-third selected' : 'column-third'}>
           <FaUserClock color={'#6D6056'} size={'3rem'} />
-          <h5>Watchlist</h5>
+          <h5>Wishlist</h5>
         </div>
       </div>
       <div className="row rating-row">

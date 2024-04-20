@@ -63,7 +63,7 @@ export function FilmDetailPage() {
     return <h3 style={{ color: 'white' }}>Film not found!</h3>;
   }
 
-  async function handleAddToWishlist() {
+  async function handleModifyWishlist() {
     if (!user) {
       alert('Please sign up or log in to save!');
     } else {
@@ -74,6 +74,7 @@ export function FilmDetailPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${readToken()}`,
           },
+          body: JSON.stringify({ filmPosterPath: filmDetails!.poster_path }),
         };
         if (isOnWatchlist) {
           req = {
@@ -82,6 +83,7 @@ export function FilmDetailPage() {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${readToken()}`,
             },
+            body: JSON.stringify({ filmPosterPath: '' }),
           };
         }
         const resp = await fetch(`/api/wishlists/${filmId}`, req);
@@ -149,7 +151,7 @@ export function FilmDetailPage() {
         <div className="rating-column">
           <RatingComponent
             watched={isOnWatchlist}
-            onClick={() => handleAddToWishlist()}
+            onClick={() => handleModifyWishlist()}
           />
         </div>
       </div>

@@ -29,6 +29,15 @@
   cursor: pointer;
 }
 
+.filmCard.void {
+  visibility: hidden;
+}
+
+.filmCard.void:hover {
+  border: none;
+  cursor: default;
+}
+
 .outlet-body h5 {
   color: white;
   font-family: Barlow, sans-serif;

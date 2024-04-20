@@ -1,9 +1,8 @@
-import { FilmDetails } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
   text: string;
-  cards: FilmDetails[];
+  cards: { id: number; poster_path: string }[];
   limit: number;
 };
 
@@ -19,7 +18,7 @@ export function Catalog({ text, cards, limit }: Props) {
         key={card.id}
         onClick={() => nav(`/film/${card.id}`)}
         src={`https://image.tmdb.org/t/p/w780/${card.poster_path}`}
-        alt={card.title}
+        alt={`Film Poster for filmId ${card.id}`}
       />
     );
     cardArray.push(singleCard);
@@ -28,7 +27,7 @@ export function Catalog({ text, cards, limit }: Props) {
     for (let i = cardArray.length % 18; i < 18; i++) {
       const singleCard = (
         <img
-          className="filmCard"
+          className="filmCard void"
           key={`tempCard ${i}`}
           src={`https://www.wallpaperstogo.com/images/product/large/247374.jpg`}
           alt="Placeholder Card"

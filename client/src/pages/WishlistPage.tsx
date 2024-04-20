@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { FilmDetails } from '../App';
 import { readToken } from '../lib/data';
 import { useUser } from '../components/useUser';
 import { Catalog } from '../components/Catalog';
 
 export function WishlistPage() {
-  const [wishlistFilms, setWishlistFilms] = useState<FilmDetails[]>();
+  const [wishlistFilms, setWishlistFilms] =
+    useState<{ id: number; poster_path: string }[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
   const { user } = useUser();
@@ -25,13 +25,10 @@ export function WishlistPage() {
         const wishlistResp = await fetch(`/api/wishlists`, wishlistReq);
         if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
         const wishlist = await wishlistResp.json();
-        const promises = await Promise.all(
-          wishlist.map((film) => fetch(`/api/films/${film.filmTMDbId}`))
-        );
-        const wishlistDetails = await Promise.all(
-          promises.map((p) => p.json())
-        );
-        setWishlistFilms(wishlistDetails);
+        const formWishlist = wishlist.map((wish) => {
+          return { id: wish.filmTMDbId, poster_path: wish.filmPosterPath };
+        });
+        setWishlistFilms(formWishlist);
       } catch (err) {
         setError(err);
       } finally {
