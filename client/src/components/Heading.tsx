@@ -31,9 +31,7 @@ export function Heading() {
         throw new Error(`Fetch error: ${res.status}`);
       }
       const user = await res.json();
-      alert(
-        `Successfully registered ${user.username} as userId ${user.userId}`
-      );
+      alert(`Successfully registered ${user.username}! Please log in`);
       setSignUpIsOpen(false);
       setSignInIsOpen(true);
     } catch (err) {
