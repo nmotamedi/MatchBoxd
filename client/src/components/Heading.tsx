@@ -14,6 +14,7 @@ export function Heading() {
   const { user, handleSignIn, handleSignOut } = useUser();
   const [signInIsOpen, setSignInIsOpen] = useState(false);
   const [signUpIsOpen, setSignUpIsOpen] = useState(false);
+  const [searchIsOpen, setSearchIsOpen] = useState(false);
 
   async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,14 +73,24 @@ export function Heading() {
           <img className="logo" src="/MatchBoxd_Name.png" alt="Title Logo" />
         </div>
         <div className="header-column column-half">
-          {user && (
+          {user && !searchIsOpen && (
             <>
               <h3>REVIEWS</h3>
               <h3 onClick={() => nav('/wishlist')}>WISHLIST</h3>
               <h3>COMPARISON</h3>
-              <FaMagnifyingGlass color="white" />
+              <span onClick={() => setSearchIsOpen(true)}>
+                <FaMagnifyingGlass color="white" />
+              </span>
               <Button text="LOG" />
               <ProfileIcon onClick={handleSignOut} text={user.username[0]} />
+            </>
+          )}
+          {user && searchIsOpen && (
+            <>
+              <span onClick={() => setSearchIsOpen(false)}>
+                <FaX color="white" />
+              </span>
+              <Search />
             </>
           )}
           {!user && !signInIsOpen && (
