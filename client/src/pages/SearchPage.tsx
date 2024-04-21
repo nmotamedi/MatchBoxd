@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { UserResultComponent } from '../components/UserResultComponent';
 import { FilmDetails } from '../App';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getQueryResults } from '../lib/data';
 
 export function SearchPage() {
   const [isFilmView, setIsFilmView] = useState(true);
@@ -16,14 +17,9 @@ export function SearchPage() {
   useEffect(() => {
     async function readQueryResults() {
       try {
-        const resp = await fetch(`/api/search/${query}`);
-        if (!resp.ok) throw new Error(`${resp.status}: ${resp.statusText}`);
-        const json: {
-          userResults: { username: string; userId: number }[];
-          filmResults: FilmDetails[];
-        } = await resp.json();
-        setUserResults(json.userResults);
-        setFilmResults(json.filmResults);
+        const results = await getQueryResults(query);
+        setUserResults(results.userResults);
+        setFilmResults(results.filmResults);
       } catch (err) {
         setError(err);
       } finally {

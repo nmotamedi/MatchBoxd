@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Catalog } from '../components/Catalog';
-import { FilmDetails } from '../App';
+import { FilmDetails, FilmPosterDetails } from '../App';
 import { useUser } from '../components/useUser';
 import './Home.css';
+import { getPopularFilms, getRecentFilms } from '../lib/data';
 
 export function Home() {
-  const [recentFilms, setRecentFilms] = useState<FilmDetails[]>();
+  const [recentFilms, setRecentFilms] = useState<FilmPosterDetails[]>();
   const [popFilms, setPopFilms] = useState<FilmDetails[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
@@ -14,17 +15,9 @@ export function Home() {
   useEffect(() => {
     async function getFilms() {
       try {
-        const recentResp = await fetch('/api/films/recent');
-        if (!recentResp.ok) throw new Error('Fetch failed');
-        const recentList = await recentResp.json();
-        const formRecentList = recentList.map((recent) => {
-          return { id: recent.filmTMDbId, poster_path: recent.filmPosterPath };
-        });
+        const formRecentList = await getRecentFilms();
         setRecentFilms(formRecentList);
-        const popResp = await fetch('/api/films/popular');
-        if (!popResp.ok) throw new Error('Fetch failed');
-        const popJSON = await popResp.json();
-        const popList = popJSON.results as FilmDetails[];
+        const popList = await getPopularFilms();
         setPopFilms(popList);
       } catch (err) {
         setError(err);

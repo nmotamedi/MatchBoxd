@@ -3,7 +3,11 @@ import { useParams } from 'react-router-dom';
 import { FilmDetails } from '../App';
 import './FilmDetails.css';
 import { RatingComponent } from '../components/RatingComponent';
-import { readToken } from '../lib/data';
+import {
+  addToOrDeleteFromWishlist,
+  getDetails,
+  getWishlist,
+} from '../lib/data';
 import { useUser } from '../components/useUser';
 
 export function FilmDetailPage() {
@@ -12,48 +16,36 @@ export function FilmDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
   const [filmDetails, setFilmDetails] = useState<FilmDetails>();
-  const [isOnWatchlist, setIsOnWatchList] = useState(false);
+  const [isOnWishlist, setIsOnWishlist] = useState(false);
 
   useEffect(() => {
-    async function getDetails() {
+    async function loadDetails() {
       try {
-        const detailsResp = await fetch(`/api/films/${filmId}`);
-        if (!detailsResp.ok) throw new Error('Failed to fetch film details');
-        const details = await detailsResp.json();
+        const details = await getDetails(filmId);
         setFilmDetails(details);
+        const wishlist = await getWishlist(user, filmId);
+        setIsOnWishlist(wishlist);
       } catch (err) {
         setError(err);
       } finally {
         setIsLoading(false);
       }
     }
-    getDetails();
+    loadDetails();
+  }, [filmId, user]);
 
-    async function getWishlist() {
-      if (user) {
-        try {
-          const wishlistReq = {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${readToken()}`,
-            },
-          };
-          const wishlistResp = await fetch(
-            `/api/wishlists/${filmId}`,
-            wishlistReq
-          );
-          if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
-          const [isWishlist] = await wishlistResp.json();
-          if (isWishlist) {
-            setIsOnWatchList(true);
-          }
-        } catch (err) {
-          alert('wishlist error');
-        }
+  async function handleModifyWishlist() {
+    if (!user) {
+      alert('Please sign up or log in to save!');
+    } else {
+      try {
+        await addToOrDeleteFromWishlist(filmDetails, isOnWishlist);
+        setIsOnWishlist(!isOnWishlist);
+      } catch (err) {
+        alert(`Error adding to wishlist: ${err}`);
       }
     }
-    getWishlist();
-  }, [filmId, user]);
+  }
 
   if (isLoading) {
     return <h3 style={{ color: 'white' }}>Loading...</h3>;
@@ -61,38 +53,6 @@ export function FilmDetailPage() {
 
   if (error || !filmDetails) {
     return <h3 style={{ color: 'white' }}>Film not found!</h3>;
-  }
-
-  async function handleModifyWishlist() {
-    if (!user) {
-      alert('Please sign up or log in to save!');
-    } else {
-      try {
-        let req = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${readToken()}`,
-          },
-          body: JSON.stringify({ filmPosterPath: filmDetails!.poster_path }),
-        };
-        if (isOnWatchlist) {
-          req = {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${readToken()}`,
-            },
-            body: JSON.stringify({ filmPosterPath: '' }),
-          };
-        }
-        const resp = await fetch(`/api/wishlists/${filmId}`, req);
-        if (!resp.ok) throw new Error(`${resp.status}`);
-        setIsOnWatchList(!isOnWatchlist);
-      } catch (err) {
-        alert(`Error adding to wishlist: ${err}`);
-      }
-    }
   }
 
   return (
@@ -150,7 +110,7 @@ export function FilmDetailPage() {
         </div>
         <div className="rating-column">
           <RatingComponent
-            watched={isOnWatchlist}
+            watched={isOnWishlist}
             onClick={() => handleModifyWishlist()}
           />
         </div>

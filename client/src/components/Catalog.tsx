@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { FilmPosterDetails } from '../App';
 
 type Props = {
   text: string;
-  cards: { id: number; poster_path: string }[];
+  cards: FilmPosterDetails[];
   limit: number;
 };
 

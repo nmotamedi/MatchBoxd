@@ -10,12 +10,15 @@ import { saveToken } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
 import { SearchPage } from './pages/SearchPage';
 
-export type FilmDetails = {
-  backdrop_path: string;
+export type FilmPosterDetails = {
   id: number;
+  poster_path: string;
+};
+
+export type FilmDetails = FilmPosterDetails & {
+  backdrop_path: string;
   overview: string;
   tagline: string;
-  poster_path: string;
   release_date: string;
   title: string;
   cast?: { name: string }[];
