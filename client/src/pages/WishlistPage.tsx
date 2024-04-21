@@ -1,44 +1,31 @@
 import { useEffect, useState } from 'react';
-import { FilmDetails } from '../App';
-import { readToken } from '../lib/data';
+import { getFullWishlist } from '../lib/data';
 import { useUser } from '../components/useUser';
 import { Catalog } from '../components/Catalog';
+import { FilmPosterDetails } from '../App';
 
 export function WishlistPage() {
-  const [wishlistFilms, setWishlistFilms] = useState<FilmDetails[]>();
+  const [wishlistFilms, setWishlistFilms] = useState<FilmPosterDetails[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
   const { user } = useUser();
 
   useEffect(() => {
-    async function getWishlist() {
+    async function readWishlist() {
       if (!user) {
         setIsLoading(false);
         return;
       }
       try {
-        const wishlistReq = {
-          headers: {
-            Authorization: `Bearer ${readToken()}`,
-          },
-        };
-        const wishlistResp = await fetch(`/api/wishlists`, wishlistReq);
-        if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
-        const wishlist = await wishlistResp.json();
-        const promises = await Promise.all(
-          wishlist.map((film) => fetch(`/api/films/${film.filmTMDbId}`))
-        );
-        const wishlistDetails = await Promise.all(
-          promises.map((p) => p.json())
-        );
-        setWishlistFilms(wishlistDetails);
+        const wishlist = await getFullWishlist();
+        setWishlistFilms(wishlist);
       } catch (err) {
         setError(err);
       } finally {
         setIsLoading(false);
       }
     }
-    getWishlist();
+    readWishlist();
   }, [user]);
 
   if (isLoading) {

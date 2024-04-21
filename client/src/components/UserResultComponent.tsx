@@ -1,6 +1,6 @@
 import { FaPlus, FaUserCheck } from 'react-icons/fa6';
 import { ProfileIcon } from './ProfileIcon';
-import { readToken } from '../lib/data';
+import { addOrDeleteFollower, verifyFollower } from '../lib/data';
 import { useUser } from './useUser';
 import { useEffect, useState } from 'react';
 
@@ -16,21 +16,10 @@ export function UserResultComponent({ userDetails }: Prop) {
   const [isFollowing, setIsFollowing] = useState<boolean>();
 
   useEffect(() => {
-    async function getFollowers() {
+    async function readFollower() {
       if (user) {
         try {
-          const followerReq = {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${readToken()}`,
-            },
-          };
-          const followerResp = await fetch(
-            `/api/follow/${userDetails.userId}`,
-            followerReq
-          );
-          if (!followerResp.ok) throw new Error(`${followerResp.status}`);
-          const [isFollower] = await followerResp.json();
+          const [isFollower] = await verifyFollower(userDetails);
           if (isFollower) {
             setIsFollowing(true);
           } else {
@@ -41,7 +30,7 @@ export function UserResultComponent({ userDetails }: Prop) {
         }
       }
     }
-    getFollowers();
+    readFollower();
   });
 
   async function handleFollowClick(userId: number) {
@@ -49,24 +38,7 @@ export function UserResultComponent({ userDetails }: Prop) {
       alert('Please sign up or log in to follow other users!');
     } else {
       try {
-        let req = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${readToken()}`,
-          },
-        };
-        if (isFollowing) {
-          req = {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${readToken()}`,
-            },
-          };
-        }
-        const resp = await fetch(`/api/follow/${userId}`, req);
-        if (!resp.ok) throw new Error(`${resp.status}`);
+        await addOrDeleteFollower(isFollowing, userId);
         setIsFollowing(!isFollowing);
       } catch (err) {
         console.error(err);

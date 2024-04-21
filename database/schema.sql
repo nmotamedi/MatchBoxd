@@ -16,6 +16,7 @@ CREATE TABLE "users" (
 CREATE TABLE "filmLogs" (
   "filmLogId" serial PRIMARY KEY,
   "filmTMDbId" integer NOT NULL,
+  "filmPosterPath" text NOT NULL,
   "review" text,
   "rating" integer,
   "liked" boolean,
@@ -28,6 +29,7 @@ CREATE TABLE "filmLogs" (
 CREATE TABLE "filmWishlists" (
   "filmWishlistId" serial PRIMARY KEY,
   "filmTMDbId" integer NOT NULL,
+  "filmPosterPath" text NOT NULL,
   "userId" integer NOT NULL,
   "createdAt" timestamptz NOT NULL DEFAULT (now())
 );

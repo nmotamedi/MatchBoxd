@@ -8,6 +8,7 @@ import { useState, type FormEvent } from 'react';
 import { FaX } from 'react-icons/fa6';
 import { ProfileIcon } from './ProfileIcon';
 import { Search } from './Search';
+import { postSignUp, verifySignIn } from '../lib/data';
 
 export function Heading() {
   const nav = useNavigate();
@@ -19,18 +20,7 @@ export function Heading() {
   async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      const formData = new FormData(event.currentTarget);
-      const userData = Object.fromEntries(formData);
-      const req = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      };
-      const res = await fetch('/api/auth/sign-up', req);
-      if (!res.ok) {
-        throw new Error(`Fetch error: ${res.status}`);
-      }
-      const user = await res.json();
+      const user = await postSignUp(event);
       alert(`Successfully registered ${user.username}! Please log in`);
       setSignUpIsOpen(false);
       setSignInIsOpen(true);
@@ -42,20 +32,7 @@ export function Heading() {
   async function handleSignInSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      const formData = new FormData(event.currentTarget);
-      const userData = Object.fromEntries(formData);
-      const req = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      };
-      const resp = await fetch('/api/auth/sign-in', req);
-      if (!resp.ok) {
-        throw new Error(`${resp.status}`);
-      }
-      const { user, token } = await resp.json();
+      const { user, token } = await verifySignIn(event);
       handleSignIn(user, token);
       setSignInIsOpen(false);
     } catch (err) {

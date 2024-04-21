@@ -214,15 +214,17 @@ app.post(
   async (req, res, next) => {
     try {
       const { filmTMDbId } = req.params;
+      const { filmPosterPath } = req.body;
+      console.log('filmTMDbId:', filmTMDbId, 'filmPosterPath:', filmPosterPath);
       if (!Number.isInteger(+filmTMDbId)) {
         throw new ClientError(400, 'filmId must be a number');
       }
       const sql = `
-    insert into "filmWishlists"("filmTMDbId", "userId")
-      values ($1, $2)
+    insert into "filmWishlists"("filmTMDbId", "userId", "filmPosterPath")
+      values ($1, $2, $3)
       returning *;
     `;
-      const param = [filmTMDbId, req.user?.userId];
+      const param = [filmTMDbId, req.user?.userId, filmPosterPath];
       const resp = await db.query(sql, param);
       const [row] = resp.rows;
       if (!row) throw new ClientError(404, `filmId ${filmTMDbId} not found`);
