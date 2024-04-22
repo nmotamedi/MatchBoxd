@@ -110,7 +110,13 @@ export async function addToOrDeleteFromWishlist(
 }
 
 export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
-  const recentResp = await fetch('/api/films/recent');
+  const req = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const recentResp = await fetch('/api/films/recent', req);
   if (!recentResp.ok) throw new Error('Fetch failed');
   const recentList = await recentResp.json();
   const formRecentList = recentList.map((recent) => {

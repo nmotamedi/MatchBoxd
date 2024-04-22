@@ -6,7 +6,7 @@ import './Home.css';
 import { getPopularFilms, getRecentFilms } from '../lib/data';
 
 export function Home() {
-  const [recentFilms, setRecentFilms] = useState<FilmPosterDetails[]>();
+  const [recentFilms, setRecentFilms] = useState<FilmPosterDetails[]>([]);
   const [popFilms, setPopFilms] = useState<FilmDetails[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
@@ -15,8 +15,10 @@ export function Home() {
   useEffect(() => {
     async function getFilms() {
       try {
-        const formRecentList = await getRecentFilms();
-        setRecentFilms(formRecentList);
+        if (user) {
+          const formRecentList = await getRecentFilms();
+          setRecentFilms(formRecentList);
+        }
         const popList = await getPopularFilms();
         setPopFilms(popList);
       } catch (err) {
@@ -26,7 +28,7 @@ export function Home() {
       }
     }
     getFilms();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return <div style={{ color: 'white' }}>Loading...</div>;
@@ -36,8 +38,12 @@ export function Home() {
     return <div style={{ color: 'white' }}>{`Error: ${error}`}</div>;
   }
 
-  if (!recentFilms || !popFilms) {
+  if (!popFilms) {
     return <></>;
+  }
+
+  if (!recentFilms) {
+    return <div>Error</div>;
   }
   return (
     <>
@@ -60,15 +66,15 @@ export function Home() {
       <div
         className="home-container"
         style={!user ? { position: 'relative', top: '-10.5rem' } : {}}>
-        {user && recentFilms.length !== 0 && (
+        {user && recentFilms!.length !== 0 && (
           <Catalog
             text="RECENT COMMUNITY ACTIVITY"
-            cards={recentFilms}
+            cards={recentFilms!}
             limit={6}
           />
         )}
 
-        {user && recentFilms.length === 0 && (
+        {user && recentFilms!.length === 0 && (
           <div style={{ color: 'white' }}>No Recent Listing</div>
         )}
         {!user && (

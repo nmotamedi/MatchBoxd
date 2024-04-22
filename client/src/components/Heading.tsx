@@ -52,7 +52,7 @@ export function Heading() {
             <>
               <h3>REVIEWS</h3>
               <h3 onClick={() => nav('/wishlist')}>WISHLIST</h3>
-              <h3>COMPARISON</h3>
+              <h3 onClick={() => nav('/comparison')}>COMPARISON</h3>
               <span onClick={() => setSearchIsOpen(true)}>
                 <FaMagnifyingGlass color="white" />
               </span>

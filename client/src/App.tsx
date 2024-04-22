@@ -9,6 +9,7 @@ import { User, UserProvider } from './components/UserContext';
 import { saveToken } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
 import { SearchPage } from './pages/SearchPage';
+import { Comparison } from './pages/Comparison';
 
 export type FilmPosterDetails = {
   id: number;
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/film/:filmId" element={<FilmDetailPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/search/:query" element={<SearchPage />} />
+            <Route path="/comparison" element={<Comparison />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
