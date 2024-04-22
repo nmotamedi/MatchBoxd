@@ -1,0 +1,87 @@
+.comparison-wrapper {
+  padding: 2rem;
+}
+
+.comparison-wrapper h1 {
+  font-family: Barlow, sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 2rem;
+  color: white;
+  margin: 0;
+}
+
+.comparison-wrapper h2 {
+  font-family: Barlow, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  margin: 0;
+  font-size: 1.16rem;
+  color: white;
+}
+
+.comparison-wrapper hr {
+  margin: 0;
+}
+
+.comparison-header {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.comparison-header .row {
+  margin-top: 2rem;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.comparison-header h3 {
+  font-family: 'Bona Nova', serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 2.12rem;
+  color: white;
+  margin: 0;
+}
+
+.comparison-header h4 {
+  font-family: Barlow, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: white;
+  margin: 0;
+}
+
+.comparison-body h5 {
+  font-family: Barlow, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.comparison-body h6 {
+  font-family: Barlow, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 0;
+}
+
+.comparison-body .row {
+  align-items: center;
+}
+
+.comparison-header a:hover {
+  color: #870e0e;
+}
+
+.comparison-header .column-half {
+  text-align: center;
+}

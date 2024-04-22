@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { FilmDetails, FilmPosterDetails } from '../App';
+import { Comparitor, FilmDetails, FilmPosterDetails } from '../App';
 import { User } from '../components/UserContext';
 
 export const tokenKey = 'MB.token';
@@ -110,7 +110,13 @@ export async function addToOrDeleteFromWishlist(
 }
 
 export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
-  const recentResp = await fetch('/api/films/recent');
+  const req = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const recentResp = await fetch('/api/films/recent', req);
   if (!recentResp.ok) throw new Error('Fetch failed');
   const recentList = await recentResp.json();
   const formRecentList = recentList.map((recent) => {
@@ -187,4 +193,17 @@ export async function addOrDeleteFollower(isFollowing, userId) {
   }
   const resp = await fetch(`/api/follow/${userId}`, req);
   if (!resp.ok) throw new Error(`${resp.status}`);
+}
+
+export async function getMostCompatibleAll() {
+  const req = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const resp = await fetch('/api/compare/all', req);
+  if (!resp.ok) throw new Error(`${resp.status}`);
+  const mostCompatibleAll = (await resp.json()) as Comparitor;
+  return mostCompatibleAll;
 }
