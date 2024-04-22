@@ -26,6 +26,8 @@ export type FilmDetails = FilmPosterDetails & {
   crew?: { name: string; job: string }[];
 };
 
+export type Comparitor = { highestUserId: null | number; highCorr: number };
+
 export default function App() {
   const [user, setUser] = useState<User>();
   const [token, setToken] = useState<string>();
