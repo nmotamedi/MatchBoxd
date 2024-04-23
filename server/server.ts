@@ -451,16 +451,20 @@ app.post(
       if (!filmPosterPath || !dateWatched) {
         throw new ClientError(400, 'Poster path and watch date are required');
       }
+      if (+rating > 5 || +rating < 0) {
+        throw new ClientError(400, 'Rating must be between 0.5-5');
+      }
+      const tenPointRating = +rating !== 0 ? +rating * 2 : null;
       const sql = `
-      insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId', "dateWatched")
+      insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId", "dateWatched")
         values ($1, $2, $3, $4, $5, $6, $7)
         returning *;
       `;
       const params = [
         filmTMDbId,
         filmPosterPath,
-        review,
-        rating,
+        review !== '' ? review : null,
+        tenPointRating,
         liked,
         userId,
         dateWatched,

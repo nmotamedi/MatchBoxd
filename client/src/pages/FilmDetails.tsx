@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { FilmDetails } from '../App';
 import './FilmDetails.css';
@@ -7,6 +7,7 @@ import {
   addToOrDeleteFromWishlist,
   getDetails,
   getWishlist,
+  addFilmRating,
 } from '../lib/data';
 import { useUser } from '../components/useUser';
 
@@ -44,6 +45,21 @@ export function FilmDetailPage() {
         setIsOnWishlist(!isOnWishlist);
       } catch (err) {
         alert(`Error adding to wishlist: ${err}`);
+      }
+    }
+  }
+
+  async function handleAddRatingEntry(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!user) {
+      alert("Please sign up or log in to log what you've seen!");
+    } else {
+      try {
+        if (!filmDetails) throw new Error('Details are required.');
+        await addFilmRating(e, filmDetails);
+        alert('successfully added to log');
+      } catch (err) {
+        alert(`Error adding to log: ${err}`);
       }
     }
   }
@@ -131,6 +147,7 @@ export function FilmDetailPage() {
               }
             }}
             isRating={isRating}
+            handleFormSubmit={(e) => handleAddRatingEntry(e)}
           />
         </div>
       </div>

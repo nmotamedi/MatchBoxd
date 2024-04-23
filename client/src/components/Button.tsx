@@ -2,12 +2,17 @@ import './Button.css';
 
 type Prop = {
   text: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
 export function Button({ text, onClick }: Prop) {
   return (
-    <button onClick={onClick} className="button">
+    <button
+      onClick={
+        onClick &&
+        ((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClick(e))
+      }
+      className="button">
       {text}
     </button>
   );

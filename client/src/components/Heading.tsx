@@ -65,7 +65,7 @@ export function Heading() {
               <span onClick={() => setSearchIsOpen(false)}>
                 <FaX color="white" />
               </span>
-              <Search />
+              <Search handleClose={() => setSearchIsOpen(false)} />
             </>
           )}
           {!user && !signInIsOpen && (

@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { FaStar, FaStarHalf } from 'react-icons/fa6';
 import './StarComponent.css';
 
-export function StarComponent() {
+type Prop = {
+  onClick: (number) => void;
+};
+
+export function StarComponent({ onClick }: Prop) {
   const [hoverValue, setHoverValue] = useState<number>();
   const [selectValue, setSelectValue] = useState<number>();
   const [isHovering, setIsHovering] = useState(false);
@@ -30,7 +34,10 @@ export function StarComponent() {
             setHoverValue(undefined);
             setIsHovering(false);
           }}
-          onClick={() => setSelectValue(index - 0.5)}>
+          onClick={() => {
+            setSelectValue(index - 0.5);
+            onClick(index - 0.5);
+          }}>
           <FaStarHalf />
         </span>
 
@@ -50,7 +57,10 @@ export function StarComponent() {
             setHoverValue(undefined);
             setIsHovering(false);
           }}
-          onClick={() => setSelectValue(index)}>
+          onClick={() => {
+            setSelectValue(index);
+            onClick(index);
+          }}>
           <FaStar />
         </span>
       </span>
@@ -62,5 +72,9 @@ export function StarComponent() {
     stars.push(singleStar(i));
   }
 
-  return <span className="star-container">{stars}</span>;
+  return (
+    <>
+      <span className="star-container">{stars}</span>
+    </>
+  );
 }

@@ -207,3 +207,26 @@ export async function getMostCompatibleAll() {
   const mostCompatibleAll = (await resp.json()) as Comparitor;
   return mostCompatibleAll;
 }
+
+export async function addFilmRating(
+  event: FormEvent<HTMLFormElement>,
+  filmDetails: FilmDetails
+) {
+  const formData = new FormData(event.currentTarget);
+  const reviewData = Object.fromEntries(formData);
+  const body = { ...reviewData, filmPosterPath: filmDetails.poster_path };
+  const req = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+    body: JSON.stringify(body),
+  };
+  const res = await fetch(`/api/films/ratings/${filmDetails.id}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch error: ${res.status}`);
+  }
+  const ratingEntry = await res.json();
+  return ratingEntry;
+}
