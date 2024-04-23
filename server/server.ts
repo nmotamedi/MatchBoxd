@@ -225,7 +225,6 @@ app.post(
     try {
       const { filmTMDbId } = req.params;
       const { filmPosterPath } = req.body;
-      console.log('filmTMDbId:', filmTMDbId, 'filmPosterPath:', filmPosterPath);
       if (!Number.isInteger(+filmTMDbId)) {
         throw new ClientError(400, 'filmId must be a number');
       }
@@ -434,6 +433,46 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
     next(err);
   }
 });
+
+app.post(
+  '/api/films/ratings/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new ClientError(400, 'userId is required.');
+      }
+      const { filmPosterPath, review, rating, liked, dateWatched } = req.body;
+      if (!filmPosterPath || !dateWatched) {
+        throw new ClientError(400, 'Poster path and watch date are required');
+      }
+      const sql = `
+      insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId', "dateWatched")
+        values ($1, $2, $3, $4, $5, $6, $7)
+        returning *;
+      `;
+      const params = [
+        filmTMDbId,
+        filmPosterPath,
+        review,
+        rating,
+        liked,
+        userId,
+        dateWatched,
+      ];
+      const resp = await db.query(sql, params);
+      const [row] = resp.rows;
+      res.status(201).json(row);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 /*
  * Middleware that handles paths that aren't handled by static middleware

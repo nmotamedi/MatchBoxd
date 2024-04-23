@@ -37,10 +37,27 @@ svg > path:hover {
   cursor: pointer;
 }
 
+[type='checkBox']:checked + svg > path {
+  color: #4a1b1b;
+}
+
 .rating-row .selected svg > path {
   color: #4a1b1b;
+}
+
+[type='checkBox']:checked + svg > path:hover {
+  color: #6d6056;
 }
 
 .rating-row .selected svg > path:hover {
   color: #6d6056;
 }
+
+[type='checkBox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* CHECKED STYLES */

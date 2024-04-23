@@ -1,0 +1,41 @@
+.star-container {
+  position: relative;
+}
+
+.base {
+  position: relative;
+}
+
+.base svg > path {
+  color: #6d6056;
+}
+
+.star-container svg {
+  height: 2rem;
+  width: 2rem;
+}
+
+.star-container .half svg > path,
+.star-container .full svg > path {
+  color: transparent;
+}
+
+.star-container .half.active svg > path,
+.star-container .full.active svg > path {
+  color: #4a1b1b;
+}
+
+.half,
+.full {
+  position: absolute;
+  overflow: hidden;
+}
+
+.full {
+  z-index: 1;
+}
+
+.half {
+  width: 1rem;
+  z-index: 2;
+}

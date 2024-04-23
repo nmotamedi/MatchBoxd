@@ -17,6 +17,7 @@ export function FilmDetailPage() {
   const [error, setError] = useState<unknown>();
   const [filmDetails, setFilmDetails] = useState<FilmDetails>();
   const [isOnWishlist, setIsOnWishlist] = useState(false);
+  const [isRating, setIsRating] = useState(false);
 
   useEffect(() => {
     async function loadDetails() {
@@ -111,7 +112,25 @@ export function FilmDetailPage() {
         <div className="rating-column">
           <RatingComponent
             watched={isOnWishlist}
-            onClick={() => handleModifyWishlist()}
+            onWishlistClick={() => handleModifyWishlist()}
+            onRatingClick={() => {
+              if (!user) {
+                alert('Please sign up or log in to Log!');
+              } else {
+                setIsRating(!isRating);
+                // Add form reset to this.
+              }
+            }}
+            onLikedClick={() => {
+              if (!user) {
+                alert('Please sign up or log in to Log!');
+              } else {
+                if (!isRating) {
+                  setIsRating(true);
+                }
+              }
+            }}
+            isRating={isRating}
           />
         </div>
       </div>
