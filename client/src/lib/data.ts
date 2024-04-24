@@ -3,7 +3,6 @@ import {
   FilmDetails,
   FilmPosterDetails,
   RatingEntry,
-  UserDetails,
 } from '../App';
 import { User } from '../components/UserContext';
 
@@ -17,13 +16,30 @@ export function saveToken(token: string | undefined): void {
   }
 }
 
+export function saveUser(
+  userPayload: { user: User; token: string } | undefined
+): void {
+  if (userPayload) {
+    localStorage.setItem(tokenKey, JSON.stringify(userPayload));
+  } else {
+    localStorage.removeItem(tokenKey);
+  }
+}
+
 export function readToken(): string {
   const token = sessionStorage.getItem(tokenKey);
   if (!token) throw new Error('No token found');
   return token;
 }
 
-export async function postSignUp(username, password): Promise<UserDetails> {
+export function readUser(): { user: User; token: string } | undefined {
+  const payload = localStorage.getItem(tokenKey);
+  if (payload) {
+    return JSON.parse(payload);
+  }
+}
+
+export async function postSignUp(username, password): Promise<User> {
   const req = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -40,7 +56,7 @@ export async function postSignUp(username, password): Promise<UserDetails> {
 export async function verifySignIn(
   username,
   password
-): Promise<{ user: UserDetails; token: string }> {
+): Promise<{ user: User; token: string }> {
   const req = {
     method: 'POST',
     headers: {
@@ -142,11 +158,11 @@ export async function getPopularFilms(): Promise<FilmDetails[]> {
 
 export async function getQueryResults(
   query
-): Promise<{ userResults: UserDetails[]; filmResults: FilmDetails[] }> {
+): Promise<{ userResults: User[]; filmResults: FilmDetails[] }> {
   const resp = await fetch(`/api/search/${query}`);
   if (!resp.ok) throw new Error(`${resp.status}: ${resp.statusText}`);
   const json = (await resp.json()) as {
-    userResults: UserDetails[];
+    userResults: User[];
     filmResults: FilmDetails[];
   };
   return json;

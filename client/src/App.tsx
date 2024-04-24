@@ -1,12 +1,12 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Heading } from './components/Heading';
 import { Home } from './pages/Home';
 import { FilmDetailPage } from './pages/FilmDetails';
 import { NotFound } from './pages/NotFound';
 import { User, UserProvider } from './components/UserContext';
-import { saveToken } from './lib/data';
+import { readUser, saveToken, saveUser } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
 import { SearchPage } from './pages/SearchPage';
 import { Comparison } from './pages/Comparison';
@@ -26,11 +26,6 @@ export type FilmDetails = FilmPosterDetails & {
   crew?: { name: string; job: string }[];
 };
 
-export type UserDetails = {
-  username: string;
-  userId: number;
-};
-
 export type Comparator = { highestUserId: number | null; highCorr: number };
 
 export type RatingEntry = {
@@ -47,15 +42,24 @@ export default function App() {
   function handleSignIn(user: User, token: string) {
     setUser(user);
     setToken(token);
+    saveUser({ user, token });
     saveToken(token);
   }
   function handleSignOut() {
     setUser(undefined);
     setToken(undefined);
     saveToken(undefined);
+    saveUser(undefined);
   }
 
   const contextValue = { user, token, handleSignIn, handleSignOut };
+
+  useEffect(() => {
+    const loggedInUser = readUser();
+    if (loggedInUser) {
+      setUser(loggedInUser.user);
+    }
+  }, []);
 
   return (
     <>
