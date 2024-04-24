@@ -4,7 +4,7 @@ import './Heading.css';
 import { Button } from './Button';
 import { useUser } from '../components/useUser';
 import { Modal } from './Modal';
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { FaX } from 'react-icons/fa6';
 import { ProfileIcon } from './ProfileIcon';
 import { Search } from './Search';
@@ -13,30 +13,48 @@ import { postSignUp, verifySignIn } from '../lib/data';
 export function Heading() {
   const nav = useNavigate();
   const { user, handleSignIn, handleSignOut } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [signInIsOpen, setSignInIsOpen] = useState(false);
   const [signUpIsOpen, setSignUpIsOpen] = useState(false);
   const [searchIsOpen, setSearchIsOpen] = useState(false);
+  const [signUpUsername, setSignUpUsername] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [signInUsername, setSignInUsername] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  // const [signInMessage, setSignInMessage] = useState('');
+  // const [signUpMessage, setSignUpMessage] = useState('');
 
-  async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSignUpSubmit() {
+    setIsSubmitting(true);
     try {
-      const user = await postSignUp(event);
+      const user = await postSignUp(signUpUsername, signUpPassword);
       alert(`Successfully registered ${user.username}! Please log in`);
+      setSignUpUsername('');
+      setSignUpPassword('');
       setSignUpIsOpen(false);
       setSignInIsOpen(true);
     } catch (err) {
       alert(`Error registering user: ${err}`);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
-  async function handleSignInSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleSignInSubmit() {
+    setIsSubmitting(true);
     try {
-      const { user, token } = await verifySignIn(event);
+      const { user, token } = await verifySignIn(
+        signInUsername,
+        signInPassword
+      );
       handleSignIn(user, token);
+      setSignInUsername('');
+      setSignInPassword('');
       setSignInIsOpen(false);
     } catch (err) {
       alert(`Error signing in: ${err}`);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -65,7 +83,7 @@ export function Heading() {
               <span onClick={() => setSearchIsOpen(false)}>
                 <FaX color="white" />
               </span>
-              <Search />
+              <Search handleClose={() => setSearchIsOpen(false)} />
             </>
           )}
           {!user && !signInIsOpen && (
@@ -80,17 +98,24 @@ export function Heading() {
               <span onClick={() => setSignInIsOpen(false)}>
                 <FaX color="white" />
               </span>
-              <form onSubmit={handleSignInSubmit}>
-                <input type="text" name="username" placeholder="Username" />
-                <input
-                  style={{ backgroundColor: 'gray', color: 'white' }}
-                  id="sign-in-password"
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                />
-                <Button text="SIGN IN" />
-              </form>
+              <input
+                type="text"
+                placeholder="Username"
+                value={signInUsername}
+                onChange={(e) => setSignInUsername(e.currentTarget.value)}
+              />
+              <input
+                style={{ backgroundColor: 'gray', color: 'white' }}
+                id="sign-in-password"
+                type="password"
+                placeholder="Password"
+                value={signInPassword}
+                onChange={(e) => setSignInPassword(e.currentTarget.value)}
+              />
+              {/* <p>{signInMessage}</p> */}
+              <div onClick={handleSignInSubmit}>
+                {!isSubmitting && <Button text="SIGN IN" />}
+              </div>
             </div>
           )}
         </div>
@@ -105,15 +130,24 @@ export function Heading() {
           </span>
         </div>
         <h2>JOIN MATCHBOXD</h2>
-        <form onSubmit={handleSignUpSubmit}>
-          <h4>Username</h4>
-          <input id="sign-up-username" name="username" type="text" />
-          <h4>Password</h4>
-          <input id="sign-up-password" name="password" type="password" />
-          <div>
-            <Button text="Sign Up" />
-          </div>
-        </form>
+        <h4>Username</h4>
+        <input
+          id="sign-up-username"
+          type="text"
+          value={signUpUsername}
+          onChange={(e) => setSignUpUsername(e.currentTarget.value)}
+        />
+        <h4>Password</h4>
+        <input
+          id="sign-up-password"
+          type="password"
+          value={signUpPassword}
+          onChange={(e) => setSignUpPassword(e.currentTarget.value)}
+        />
+        {/* <p>{signUpMessage}</p> */}
+        <div onClick={handleSignUpSubmit}>
+          {!isSubmitting && <Button text="Sign Up" />}
+        </div>
       </Modal>
     </>
   );

@@ -1,4 +1,3 @@
-import { FormEvent } from 'react';
 import { Comparitor, FilmDetails, FilmPosterDetails } from '../App';
 import { User } from '../components/UserContext';
 
@@ -18,13 +17,11 @@ export function readToken(): string {
   return token;
 }
 
-export async function postSignUp(event: FormEvent<HTMLFormElement>) {
-  const formData = new FormData(event.currentTarget);
-  const userData = Object.fromEntries(formData);
+export async function postSignUp(username, password) {
   const req = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
+    body: JSON.stringify({ username, password }),
   };
   const res = await fetch('/api/auth/sign-up', req);
   if (!res.ok) {
@@ -34,15 +31,13 @@ export async function postSignUp(event: FormEvent<HTMLFormElement>) {
   return user;
 }
 
-export async function verifySignIn(event: FormEvent<HTMLFormElement>) {
-  const formData = new FormData(event.currentTarget);
-  const userData = Object.fromEntries(formData);
+export async function verifySignIn(username, password) {
   const req = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify({ username, password }),
   };
   const resp = await fetch('/api/auth/sign-in', req);
   if (!resp.ok) {
@@ -206,4 +201,33 @@ export async function getMostCompatibleAll() {
   if (!resp.ok) throw new Error(`${resp.status}`);
   const mostCompatibleAll = (await resp.json()) as Comparitor;
   return mostCompatibleAll;
+}
+
+export async function addFilmRating(
+  reviewValue: string,
+  ratingValue: number,
+  likedChecked: boolean,
+  filmDetails: FilmDetails
+) {
+  const body = {
+    review: reviewValue,
+    rating: ratingValue,
+    liked: likedChecked,
+    dateWatched: new Date().toJSON().split('T')[0],
+    filmPosterPath: filmDetails.poster_path,
+  };
+  const req = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+    body: JSON.stringify(body),
+  };
+  const res = await fetch(`/api/films/ratings/${filmDetails.id}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch error: ${res.status}`);
+  }
+  const ratingEntry = await res.json();
+  return ratingEntry;
 }

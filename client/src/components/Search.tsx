@@ -2,13 +2,18 @@ import { useState } from 'react';
 import { Button } from './Button';
 import { useNavigate } from 'react-router-dom';
 
-export function Search() {
+type Prop = {
+  handleClose?: () => void;
+};
+
+export function Search({ handleClose }: Prop) {
   const [inputValue, setInputValue] = useState('');
   const nav = useNavigate();
 
   function handleClick() {
     nav(`/search/${inputValue.replace(' ', '%20')}`);
     setInputValue('');
+    handleClose && handleClose();
   }
 
   return (
