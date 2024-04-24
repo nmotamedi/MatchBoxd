@@ -1,4 +1,10 @@
-import { Comparitor, FilmDetails, FilmPosterDetails } from '../App';
+import {
+  Comparator,
+  FilmDetails,
+  FilmPosterDetails,
+  RatingEntry,
+  UserDetails,
+} from '../App';
 import { User } from '../components/UserContext';
 
 export const tokenKey = 'MB.token';
@@ -17,7 +23,7 @@ export function readToken(): string {
   return token;
 }
 
-export async function postSignUp(username, password) {
+export async function postSignUp(username, password): Promise<UserDetails> {
   const req = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -31,7 +37,10 @@ export async function postSignUp(username, password) {
   return user;
 }
 
-export async function verifySignIn(username, password) {
+export async function verifySignIn(
+  username,
+  password
+): Promise<{ user: UserDetails; token: string }> {
   const req = {
     method: 'POST',
     headers: {
@@ -47,7 +56,9 @@ export async function verifySignIn(username, password) {
   return payload;
 }
 
-export async function getDetails(filmId: string | undefined) {
+export async function getDetails(
+  filmId: string | undefined
+): Promise<FilmDetails> {
   const detailsResp = await fetch(`/api/films/${filmId}`);
   if (!detailsResp.ok) throw new Error('Failed to fetch film details');
   const details = await detailsResp.json();
@@ -81,7 +92,7 @@ export async function getWishlist(
 export async function addToOrDeleteFromWishlist(
   filmDetails: FilmDetails | undefined,
   isOnWishlist: boolean
-) {
+): Promise<void> {
   let req = {
     method: 'POST',
     headers: {
@@ -114,9 +125,10 @@ export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
   const recentResp = await fetch('/api/films/recent', req);
   if (!recentResp.ok) throw new Error('Fetch failed');
   const recentList = await recentResp.json();
-  const formRecentList = recentList.map((recent) => {
-    return { id: recent.filmTMDbId, poster_path: recent.filmPosterPath };
-  });
+  const formRecentList = recentList.map((recent) => ({
+    id: recent.filmTMDbId,
+    poster_path: recent.filmPosterPath,
+  }));
   return formRecentList;
 }
 
@@ -128,13 +140,15 @@ export async function getPopularFilms(): Promise<FilmDetails[]> {
   return popList;
 }
 
-export async function getQueryResults(query) {
+export async function getQueryResults(
+  query
+): Promise<{ userResults: UserDetails[]; filmResults: FilmDetails[] }> {
   const resp = await fetch(`/api/search/${query}`);
   if (!resp.ok) throw new Error(`${resp.status}: ${resp.statusText}`);
-  const json: {
-    userResults: { username: string; userId: number }[];
+  const json = (await resp.json()) as {
+    userResults: UserDetails[];
     filmResults: FilmDetails[];
-  } = await resp.json();
+  };
   return json;
 }
 
@@ -153,7 +167,9 @@ export async function getFullWishlist(): Promise<FilmPosterDetails[]> {
   return formWishlist;
 }
 
-export async function verifyFollower(userDetails) {
+export async function verifyFollower(
+  userDetails
+): Promise<[number | undefined]> {
   const followerReq = {
     headers: {
       'Content-Type': 'application/json',
@@ -169,7 +185,7 @@ export async function verifyFollower(userDetails) {
   return isFollower;
 }
 
-export async function addOrDeleteFollower(isFollowing, userId) {
+export async function addOrDeleteFollower(isFollowing, userId): Promise<void> {
   let req = {
     method: 'POST',
     headers: {
@@ -190,7 +206,7 @@ export async function addOrDeleteFollower(isFollowing, userId) {
   if (!resp.ok) throw new Error(`${resp.status}`);
 }
 
-export async function getMostCompatibleAll() {
+export async function getMostCompatibleAll(): Promise<Comparator> {
   const req = {
     headers: {
       'Content-Type': 'application/json',
@@ -199,7 +215,7 @@ export async function getMostCompatibleAll() {
   };
   const resp = await fetch('/api/compare/all', req);
   if (!resp.ok) throw new Error(`${resp.status}`);
-  const mostCompatibleAll = (await resp.json()) as Comparitor;
+  const mostCompatibleAll = (await resp.json()) as Comparator;
   return mostCompatibleAll;
 }
 
@@ -208,7 +224,7 @@ export async function addFilmRating(
   ratingValue: number,
   likedChecked: boolean,
   filmDetails: FilmDetails
-) {
+): Promise<RatingEntry> {
   const body = {
     review: reviewValue,
     rating: ratingValue,

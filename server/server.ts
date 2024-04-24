@@ -457,7 +457,7 @@ app.post(
       const sql = `
       insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId", "dateWatched")
         values ($1, $2, $3, $4, $5, $6, $7)
-        returning *;
+        returning "filmTMDbId", "review", "rating", "liked", "userId";
       `;
       const params = [
         filmTMDbId,

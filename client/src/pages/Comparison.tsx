@@ -3,13 +3,13 @@ import { Button } from '../components/Button';
 import { Catalog } from '../components/Catalog';
 import { ProfileIcon } from '../components/ProfileIcon';
 import './Comparison.css';
-import { Comparitor } from '../App';
+import { Comparator } from '../App';
 import { getMostCompatibleAll } from '../lib/data';
 import { useUser } from '../components/useUser';
 
 export function Comparison() {
   const { user } = useUser();
-  const [mostCompatibleAll, setMostCompatibleAll] = useState<Comparitor>();
+  const [mostCompatibleAll, setMostCompatibleAll] = useState<Comparator>();
   // const [mostCompatibleFollowing, setMostCompatibleFollowing] =
   //   useState<Comparitor>();
   const [error, setError] = useState<unknown>();
@@ -22,7 +22,7 @@ export function Comparison() {
     }
     async function readMostCompatible() {
       try {
-        const compatibleAll = (await getMostCompatibleAll()) as Comparitor;
+        const compatibleAll = (await getMostCompatibleAll()) as Comparator;
         setMostCompatibleAll(compatibleAll);
       } catch (err) {
         setError(err);
