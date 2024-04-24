@@ -1,4 +1,3 @@
-import { FormEvent } from 'react';
 import { Comparitor, FilmDetails, FilmPosterDetails } from '../App';
 import { User } from '../components/UserContext';
 
@@ -18,13 +17,11 @@ export function readToken(): string {
   return token;
 }
 
-export async function postSignUp(event: FormEvent<HTMLFormElement>) {
-  const formData = new FormData(event.currentTarget);
-  const userData = Object.fromEntries(formData);
+export async function postSignUp(username, password) {
   const req = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
+    body: JSON.stringify({ username, password }),
   };
   const res = await fetch('/api/auth/sign-up', req);
   if (!res.ok) {
@@ -34,15 +31,13 @@ export async function postSignUp(event: FormEvent<HTMLFormElement>) {
   return user;
 }
 
-export async function verifySignIn(event: FormEvent<HTMLFormElement>) {
-  const formData = new FormData(event.currentTarget);
-  const userData = Object.fromEntries(formData);
+export async function verifySignIn(username, password) {
   const req = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify({ username, password }),
   };
   const resp = await fetch('/api/auth/sign-in', req);
   if (!resp.ok) {
