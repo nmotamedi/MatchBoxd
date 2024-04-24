@@ -38,7 +38,11 @@ export function Comparison() {
   }
 
   if (error) {
-    return <div style={{ color: 'white' }}>{`Error: ${error}`}</div>;
+    return (
+      <div style={{ color: 'white' }}>
+        Rate more movies to see your accurate compatibility!
+      </div>
+    );
   }
 
   if (!user) {
@@ -48,7 +52,15 @@ export function Comparison() {
   }
 
   if (!mostCompatibleAll) {
-    return <div style={{ color: 'white' }}>Please rate more movies</div>;
+    return <div style={{ color: 'white' }}>Error</div>;
+  }
+
+  if (mostCompatibleAll.highestUserId === null) {
+    return (
+      <div style={{ color: 'white' }}>
+        Rate more movies to see your accurate compatibility!
+      </div>
+    );
   }
 
   return (

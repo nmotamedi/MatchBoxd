@@ -209,12 +209,18 @@ export async function getMostCompatibleAll() {
 }
 
 export async function addFilmRating(
-  event: FormEvent<HTMLFormElement>,
+  reviewValue: string,
+  ratingValue: number,
+  likedChecked: boolean,
   filmDetails: FilmDetails
 ) {
-  const formData = new FormData(event.currentTarget);
-  const reviewData = Object.fromEntries(formData);
-  const body = { ...reviewData, filmPosterPath: filmDetails.poster_path };
+  const body = {
+    review: reviewValue,
+    rating: ratingValue,
+    liked: likedChecked,
+    dateWatched: new Date().toJSON().split('T')[0],
+    filmPosterPath: filmDetails.poster_path,
+  };
   const req = {
     method: 'POST',
     headers: {

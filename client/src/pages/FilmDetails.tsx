@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FilmDetails } from '../App';
 import './FilmDetails.css';
@@ -7,7 +7,6 @@ import {
   addToOrDeleteFromWishlist,
   getDetails,
   getWishlist,
-  addFilmRating,
 } from '../lib/data';
 import { useUser } from '../components/useUser';
 
@@ -18,7 +17,6 @@ export function FilmDetailPage() {
   const [error, setError] = useState<unknown>();
   const [filmDetails, setFilmDetails] = useState<FilmDetails>();
   const [isOnWishlist, setIsOnWishlist] = useState(false);
-  const [isRating, setIsRating] = useState(false);
 
   useEffect(() => {
     async function loadDetails() {
@@ -45,21 +43,6 @@ export function FilmDetailPage() {
         setIsOnWishlist(!isOnWishlist);
       } catch (err) {
         alert(`Error adding to wishlist: ${err}`);
-      }
-    }
-  }
-
-  async function handleAddRatingEntry(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!user) {
-      alert("Please sign up or log in to log what you've seen!");
-    } else {
-      try {
-        if (!filmDetails) throw new Error('Details are required.');
-        await addFilmRating(e, filmDetails);
-        alert('successfully added to log');
-      } catch (err) {
-        alert(`Error adding to log: ${err}`);
       }
     }
   }
@@ -129,25 +112,7 @@ export function FilmDetailPage() {
           <RatingComponent
             watched={isOnWishlist}
             onWishlistClick={() => handleModifyWishlist()}
-            onRatingClick={() => {
-              if (!user) {
-                alert('Please sign up or log in to Log!');
-              } else {
-                setIsRating(!isRating);
-                // Add form reset to this.
-              }
-            }}
-            onLikedClick={() => {
-              if (!user) {
-                alert('Please sign up or log in to Log!');
-              } else {
-                if (!isRating) {
-                  setIsRating(true);
-                }
-              }
-            }}
-            isRating={isRating}
-            handleFormSubmit={(e) => handleAddRatingEntry(e)}
+            filmDetails={filmDetails}
           />
         </div>
       </div>

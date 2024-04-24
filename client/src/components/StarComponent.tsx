@@ -4,11 +4,12 @@ import './StarComponent.css';
 
 type Prop = {
   onClick: (number) => void;
+  ratingValue: number;
 };
 
-export function StarComponent({ onClick }: Prop) {
+export function StarComponent({ onClick, ratingValue }: Prop) {
   const [hoverValue, setHoverValue] = useState<number>();
-  const [selectValue, setSelectValue] = useState<number>();
+  const [selectValue, setSelectValue] = useState<number>(ratingValue);
   const [isHovering, setIsHovering] = useState(false);
 
   function singleStar(index: number) {
