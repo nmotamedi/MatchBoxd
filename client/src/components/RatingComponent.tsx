@@ -10,21 +10,21 @@ import { FilmDetails } from '../App';
 
 type Prop = {
   onWishlistClick: () => void;
-  watched: boolean;
+  onWishlist: boolean;
   filmDetails: FilmDetails;
 };
 
 export function RatingComponent({
   onWishlistClick,
   filmDetails,
-  watched,
+  onWishlist,
 }: Prop) {
   const [isRating, setIsRating] = useState(false);
   const [reviewIsOpen, setReviewIsOpen] = useState(false);
   const [reviewValue, setReviewValue] = useState('');
   const [ratingValue, setRatingValue] = useState<number>(0);
   const [likedChecked, setLikeChecked] = useState(false);
-  const user = useUser();
+  const { user } = useUser();
 
   async function handleAddRatingEntry() {
     setIsRating(false);
@@ -42,6 +42,10 @@ export function RatingComponent({
         alert('successfully added to log');
       } catch (err) {
         alert(`Error adding to log: ${err}`);
+      } finally {
+        setReviewValue('');
+        setRatingValue(0);
+        setLikeChecked(false);
       }
     }
   }
@@ -70,15 +74,20 @@ export function RatingComponent({
             onClick={() => {
               if (!isRating && !likedChecked) {
                 setIsRating(true);
+                setLikeChecked(true);
+              } else if (isRating && likedChecked) {
+                setLikeChecked(false);
+              } else {
+                setLikeChecked(true);
               }
-              setLikeChecked(!likedChecked);
             }}>
             {/* Fix this so that onLikedClick toggles or doesn't log. */}
             <label>
               <input
                 type="checkBox"
                 name="liked"
-                defaultChecked={likedChecked}
+                checked={likedChecked}
+                onChange={() => setLikeChecked(likedChecked)}
               />
               <FaThumbsUp color={'#6D6056'} size={'3rem'} />
               Like
@@ -86,7 +95,7 @@ export function RatingComponent({
           </div>
           <div
             onClick={onWishlistClick}
-            className={watched ? 'column-third selected' : 'column-third'}>
+            className={onWishlist ? 'column-third selected' : 'column-third'}>
             <FaUserClock color={'#6D6056'} size={'3rem'} />
             <h5>Wishlist</h5>
           </div>

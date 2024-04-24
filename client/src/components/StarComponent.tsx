@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaStar, FaStarHalf } from 'react-icons/fa6';
 import './StarComponent.css';
 
@@ -9,8 +9,12 @@ type Prop = {
 
 export function StarComponent({ onClick, ratingValue }: Prop) {
   const [hoverValue, setHoverValue] = useState<number>();
-  const [selectValue, setSelectValue] = useState<number>(ratingValue);
+  const [selectValue, setSelectValue] = useState<number>();
   const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    setSelectValue(ratingValue);
+  }, [ratingValue]);
 
   function singleStar(index: number) {
     return (

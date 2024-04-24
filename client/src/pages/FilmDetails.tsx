@@ -110,7 +110,7 @@ export function FilmDetailPage() {
         </div>
         <div className="rating-column">
           <RatingComponent
-            watched={isOnWishlist}
+            onWishlist={isOnWishlist}
             onWishlistClick={() => handleModifyWishlist()}
             filmDetails={filmDetails}
           />
