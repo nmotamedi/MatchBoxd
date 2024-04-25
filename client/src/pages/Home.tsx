@@ -66,7 +66,7 @@ export function Home() {
       <div
         className="home-container"
         style={!user ? { position: 'relative', top: '-10.5rem' } : {}}>
-        {user && recentFilms!.length !== 0 && (
+        {user && recentFilms.length !== 0 && (
           <Catalog
             text="RECENT COMMUNITY ACTIVITY"
             cards={recentFilms!}

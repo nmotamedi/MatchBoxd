@@ -18,6 +18,11 @@
   margin: 0;
   font-size: 1.16rem;
   color: white;
+  cursor: pointer;
+}
+
+.comparison-wrapper h2.selected {
+  font-size: 1.5rem;
 }
 
 .comparison-wrapper hr {
@@ -84,4 +89,8 @@
 
 .comparison-header .column-half {
   text-align: center;
+}
+
+.comparison-body img {
+  width: 20%;
 }

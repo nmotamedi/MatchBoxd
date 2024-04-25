@@ -375,7 +375,8 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
     const activeUserRatingsSql = `
     select "userId", "filmTMDbId", "rating", "liked"
       from "filmLogs"
-      where "userId" = $1
+      where "userId" = $1 and
+      "rating" IS NOT NULL
       order by "filmTMDbId";
     `;
     const activeUserId = req.user?.userId;
@@ -394,7 +395,7 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
       from "filmLogs"
       where "userId" != $1 and
       "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
-      "rating" != null
+      "rating" IS NOT NULL
       order by "userId", "filmTMDbId";
     `;
     const otherRatingsResp = await db.query(otherUsersRatingsSql, [
@@ -404,7 +405,7 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
     const usersSet = new Set(otherRatings.map((rating) => rating.userId));
     const highestCorr: { highestUserId: null | number; highCorr: number } = {
       highestUserId: null,
-      highCorr: 0,
+      highCorr: -Infinity,
     };
     usersSet.forEach((comparitorUserId) => {
       const comparitorRatings = otherRatings
@@ -428,7 +429,263 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
         highestCorr.highestUserId = comparitorUserId;
       }
     });
-    res.json(highestCorr);
+    if (!highestCorr.highestUserId) {
+      res.json(highestCorr);
+      return;
+    }
+    const comparatorId: number = highestCorr.highestUserId;
+    const usernameSql = `
+      select "username"
+        from "users"
+        where "userId" = $1;
+    `;
+    const usernameResp = await db.query(usernameSql, [comparatorId]);
+    const [username] = usernameResp.rows;
+    const filmCountSql = `
+      select COUNT(distinct "filmTMDbId") as films
+        FROM "filmLogs"
+        where "userId" = $1;
+    `;
+    const filmCountResp = await db.query(filmCountSql, [comparatorId]);
+    const [filmCount] = filmCountResp.rows;
+    const followingCountSql = `
+      select COUNT(*) as followers
+        FROM "followLogs"
+        where "followedUserId" = $1;
+    `;
+    const followingCountResp = await db.query(followingCountSql, [
+      comparatorId,
+    ]);
+    const [followingCount] = followingCountResp.rows;
+    const recommendationSql = `
+      select "filmTMDbId", "filmPosterPath", "rating", "liked"
+        from "filmLogs"
+        where "userId" = $1 and
+        "filmTMDbId" not in (select "filmTMDbId" from "filmLogs" where "userId" = $2) and
+        "rating" IS NOT NULL
+        order by "rating" desc
+        limit 4;
+    `;
+    const recommendationResp = await db.query(recommendationSql, [
+      comparatorId,
+      activeUserId,
+    ]);
+    const recommendations = recommendationResp.rows;
+    const recentReviewsSql = `
+      select "filmTMDbId", "filmPosterPath", "dateWatched", "review"
+        from "filmLogs"
+        where "userId" = $1 and
+        "review" IS NOT NULL
+        order by "dateWatched" desc
+        limit 3;
+    `;
+    const recentReviewsResp = await db.query(recentReviewsSql, [comparatorId]);
+    const recentReviews = recentReviewsResp.rows;
+    const overlappingWatchedSql = `
+      select COUNT(distinct "filmTMDbId") as "overlappingWatched"
+        FROM "filmLogs"
+        where "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
+        "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $2);
+    `;
+    const overlappingWatchedResp = await db.query(overlappingWatchedSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingWatched] = overlappingWatchedResp.rows;
+    const overlappingRatingsSql = `
+      SELECT COUNT(distinct t1."filmTMDbId") as "overlappingRatings"
+        FROM "filmLogs" AS t1
+        JOIN "filmLogs" AS t2 ON t1."filmTMDbId" = t2."filmTMDbId" AND t1."rating" = t2."rating"
+        WHERE t1."userId" = $1 AND t2."userId" = $2;
+    `;
+    const overlappingRatingsResp = await db.query(overlappingRatingsSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingRatings] = overlappingRatingsResp.rows;
+    const overlappingLikedSql = `
+      SELECT COUNT(distinct t1."filmTMDbId") as "overlappingLiked"
+        FROM "filmLogs" AS t1
+        JOIN "filmLogs" AS t2 ON t1."filmTMDbId" = t2."filmTMDbId" AND t1."liked" = t2."liked"
+        WHERE t1."userId" = $1 AND t2."userId" = $2;
+    `;
+    const overlappingLikedResp = await db.query(overlappingLikedSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingLiked] = overlappingLikedResp.rows;
+    res.json({
+      ...highestCorr,
+      ...username,
+      ...filmCount,
+      ...followingCount,
+      recommendations: [...recommendations],
+      recentReviews: [...recentReviews],
+      ...overlappingWatched,
+      ...overlappingRatings,
+      ...overlappingLiked,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
+  try {
+    const activeUserRatingsSql = `
+    select "userId", "filmTMDbId", "rating", "liked"
+      from "filmLogs"
+      where "userId" = $1 and
+      "rating" IS NOT NULL
+      order by "filmTMDbId";
+    `;
+    const activeUserId = req.user?.userId;
+    if (!activeUserId) {
+      throw new ClientError(400, 'userId is required.');
+    }
+    const activeRatingsResp = await db.query(activeUserRatingsSql, [
+      activeUserId,
+    ]);
+    const activeUserRatings = activeRatingsResp.rows as Rating[];
+    if (activeUserRatings.length < 10) {
+      throw new ClientError(400, 'Too few reviews');
+    }
+    const otherUsersRatingsSql = `
+    select "userId", "filmTMDbId", "rating", "liked"
+      from "filmLogs"
+      where "userId" != $1 and
+      "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
+      "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1) and
+      "rating" IS NOT NULL
+      order by "userId", "filmTMDbId";
+    `;
+    const otherRatingsResp = await db.query(otherUsersRatingsSql, [
+      activeUserId,
+    ]);
+    const otherRatings = otherRatingsResp.rows as Rating[];
+    const usersSet = new Set(otherRatings.map((rating) => rating.userId));
+    const highestCorr: { highestUserId: null | number; highCorr: number } = {
+      highestUserId: null,
+      highCorr: -Infinity,
+    };
+    usersSet.forEach((comparitorUserId) => {
+      const comparitorRatings = otherRatings
+        .filter((rating) => rating.userId === comparitorUserId)
+        .map((rating) => rating.rating);
+      if (comparitorRatings.length < 10) {
+        return;
+      }
+      const comparitorMovies = otherRatings
+        .filter((rating) => rating.userId === comparitorUserId)
+        .map((rating) => rating.filmTMDbId);
+      const filteredUserRatings = activeUserRatings
+        .filter((rating) => comparitorMovies.includes(rating.filmTMDbId))
+        .map((rating) => rating.rating);
+      const correlation = calculateCorrelation(
+        filteredUserRatings,
+        comparitorRatings
+      );
+      if (correlation > highestCorr.highCorr) {
+        highestCorr.highCorr = correlation;
+        highestCorr.highestUserId = comparitorUserId;
+      }
+    });
+    if (!highestCorr.highestUserId) {
+      res.json(highestCorr);
+      return;
+    }
+    const comparatorId: number = highestCorr.highestUserId;
+    const usernameSql = `
+      select "username"
+        from "users"
+        where "userId" = $1;
+    `;
+    const usernameResp = await db.query(usernameSql, [comparatorId]);
+    const [username] = usernameResp.rows;
+    const filmCountSql = `
+      select COUNT(distinct "filmTMDbId") as films
+        FROM "filmLogs"
+        where "userId" = $1;
+    `;
+    const filmCountResp = await db.query(filmCountSql, [comparatorId]);
+    const [filmCount] = filmCountResp.rows;
+    const followingCountSql = `
+      select COUNT(*) as followers
+        FROM "followLogs"
+        where "followedUserId" = $1;
+    `;
+    const followingCountResp = await db.query(followingCountSql, [
+      comparatorId,
+    ]);
+    const [followingCount] = followingCountResp.rows;
+    const recommendationSql = `
+      select "filmTMDbId", "filmPosterPath", "rating", "liked"
+        from "filmLogs"
+        where "userId" = $1 and
+        "filmTMDbId" not in (select "filmTMDbId" from "filmLogs" where "userId" = $2) and
+        "rating" IS NOT NULL
+        order by "rating" desc
+        limit 4;
+    `;
+    const recommendationResp = await db.query(recommendationSql, [
+      comparatorId,
+      activeUserId,
+    ]);
+    const recommendations = recommendationResp.rows;
+    const recentReviewsSql = `
+      select "filmTMDbId", "filmPosterPath", "dateWatched", "review"
+        from "filmLogs"
+        where "userId" = $1 and
+        "review" IS NOT NULL
+        order by "dateWatched" desc
+        limit 3;
+    `;
+    const recentReviewsResp = await db.query(recentReviewsSql, [comparatorId]);
+    const recentReviews = recentReviewsResp.rows;
+    const overlappingWatchedSql = `
+      select COUNT(distinct "filmTMDbId") as "overlappingWatched"
+        FROM "filmLogs"
+        where "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
+        "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $2);
+    `;
+    const overlappingWatchedResp = await db.query(overlappingWatchedSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingWatched] = overlappingWatchedResp.rows;
+    const overlappingRatingsSql = `
+      SELECT COUNT(distinct t1."filmTMDbId") as "overlappingRatings"
+        FROM "filmLogs" AS t1
+        JOIN "filmLogs" AS t2 ON t1."filmTMDbId" = t2."filmTMDbId" AND t1."rating" = t2."rating"
+        WHERE t1."userId" = $1 AND t2."userId" = $2;
+    `;
+    const overlappingRatingsResp = await db.query(overlappingRatingsSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingRatings] = overlappingRatingsResp.rows;
+    const overlappingLikedSql = `
+      SELECT COUNT(distinct t1."filmTMDbId") as "overlappingLiked"
+        FROM "filmLogs" AS t1
+        JOIN "filmLogs" AS t2 ON t1."filmTMDbId" = t2."filmTMDbId" AND t1."liked" = t2."liked"
+        WHERE t1."userId" = $1 AND t2."userId" = $2;
+    `;
+    const overlappingLikedResp = await db.query(overlappingLikedSql, [
+      activeUserId,
+      comparatorId,
+    ]);
+    const [overlappingLiked] = overlappingLikedResp.rows;
+    res.json({
+      ...highestCorr,
+      ...username,
+      ...filmCount,
+      ...followingCount,
+      recommendations: [...recommendations],
+      recentReviews: [...recentReviews],
+      ...overlappingWatched,
+      ...overlappingRatings,
+      ...overlappingLiked,
+    });
   } catch (err) {
     next(err);
   }
@@ -457,7 +714,7 @@ app.post(
       const sql = `
       insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId", "dateWatched")
         values ($1, $2, $3, $4, $5, $6, $7)
-        returning *;
+        returning "filmTMDbId", "review", "rating", "liked", "userId";
       `;
       const params = [
         filmTMDbId,
