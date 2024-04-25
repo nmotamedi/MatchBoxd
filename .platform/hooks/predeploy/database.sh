@@ -23,3 +23,11 @@ DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOSTNAME:$DB_PORT/$DB_NAME
 psql "$DATABASE_URL" \
   -f database/schema.sql \
   -f database/data.sql
+psql "$DATABASE_URL" \
+  -c "\copy users (username, \"hashedPassword\") \
+  FROM 'database/public/Matchboxd_SQL_Dump-users.csv' \
+  WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8')"
+psql "$DATABASE_URL" \
+  -c "\copy \"filmLogs\" (\"filmTMDbId\", \"filmPosterPath\", review, rating, liked, \"userId\", \"dateWatched\") \
+  FROM 'database/public/Matchboxd_SQL_Dump-filmLogs.csv' \
+  WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8')"
