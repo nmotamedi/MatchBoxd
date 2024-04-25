@@ -235,6 +235,19 @@ export async function getMostCompatibleAll(): Promise<Comparator> {
   return mostCompatibleAll;
 }
 
+export async function getMostCompatibleFollowing(): Promise<Comparator> {
+  const req = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const resp = await fetch('/api/compare/following', req);
+  if (!resp.ok) throw new Error(`${resp.status}`);
+  const mostCompatibleFollowing = (await resp.json()) as Comparator;
+  return mostCompatibleFollowing;
+}
+
 export async function addFilmRating(
   reviewValue: string,
   ratingValue: number,

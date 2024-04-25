@@ -26,13 +26,24 @@ export type FilmDetails = FilmPosterDetails & {
   crew?: { name: string; job: string }[];
 };
 
-export type Comparator = { highestUserId: number | null; highCorr: number };
+export type Comparator = {
+  highestUserId: number | null;
+  highCorr: number;
+  username: string;
+  films: string;
+  followers: string;
+  overlappingLiked: string;
+  overlappingRatings: string;
+  overlappingWatched: string;
+  recommendations: (RatingEntry & { filmPosterPath: string })[];
+  recentReview: (RatingEntry & { filmPosterPath: string })[];
+};
 
 export type RatingEntry = {
   filmTMDbId: number;
-  review: string;
-  rating: number;
-  liked: boolean;
+  review?: string;
+  rating?: number;
+  liked?: boolean;
   userId: number;
 };
 
