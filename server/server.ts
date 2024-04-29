@@ -6,7 +6,6 @@ import {
   authMiddleware,
   defaultMiddleware,
   errorMiddleware,
-  // authMiddleware,
 } from './lib/index.js';
 import fetch from 'node-fetch';
 import argon2 from 'argon2';
@@ -145,7 +144,8 @@ app.get('/api/wishlists', authMiddleware, async (req, res, next) => {
     const sql = `
     select *
     from "filmWishlists"
-    where "userId" = $1;
+    where "userId" = $1
+    order by "createdAt" desc;
     `;
     const resp = await db.query(sql, [req.user?.userId]);
     res.json(resp.rows);
@@ -166,8 +166,7 @@ app.get(
       const sql = `
     select *
     from "filmWishlists"
-    where "userId" = $1 and "filmTMDbId" = $2
-    order by "createdAt" desc;
+    where "userId" = $1 and "filmTMDbId" = $2;
     `;
       const params = [req.user?.userId, filmTMDbId];
       const resp = await db.query(sql, params);
@@ -731,7 +730,7 @@ app.get('/api/films/ratings/recent', authMiddleware, async (req, res, next) => {
 });
 
 app.get(
-  '/api/films/ratings/:filmTMDbID',
+  '/api/films/ratings/:filmTMDbId',
   authMiddleware,
   async (req, res, next) => {
     try {
@@ -740,7 +739,7 @@ app.get(
         throw new ClientError(400, 'filmId must be a number');
       }
       const filmRatingSQL = `
-      select "review", "rating", "liked"
+      select "filmTMDbId", "userId", "review", "rating", "liked"
         from "filmLogs"
         where "filmTMDbId" = $1 and
         "userId" = $2;
@@ -749,7 +748,7 @@ app.get(
         filmTMDbId,
         req.user?.userId,
       ]);
-      const [filmRating] = filmRatingResponse.rows;
+      const filmRating = filmRatingResponse.rows;
       res.json(filmRating);
     } catch (err) {
       next(err);

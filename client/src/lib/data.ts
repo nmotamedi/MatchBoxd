@@ -292,6 +292,22 @@ export async function addFilmRating(
   return ratingEntry;
 }
 
+export async function getFilmRating(
+  filmTMDbId: string | undefined
+): Promise<RatingEntry | undefined> {
+  const req = {
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const res = await fetch(`/api/films/ratings/${filmTMDbId}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch Error: ${res.status}`);
+  }
+  const rating = (await res.json())[0] as RatingEntry;
+  return rating;
+}
+
 export async function getReviews(): Promise<RatingEntry[]> {
   const req = {
     headers: {

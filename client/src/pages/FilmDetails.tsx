@@ -6,6 +6,7 @@ import { RatingComponent } from '../components/RatingComponent';
 import {
   addToOrDeleteFromWishlist,
   getDetails,
+  getFilmRating,
   getWishlist,
 } from '../lib/data';
 import { useUser } from '../components/useUser';
@@ -17,6 +18,10 @@ export function FilmDetailPage() {
   const [error, setError] = useState<unknown>();
   const [filmDetails, setFilmDetails] = useState<FilmDetails>();
   const [isOnWishlist, setIsOnWishlist] = useState(false);
+  const [isLogged, setIsLogged] = useState<boolean>();
+  const [isLiked, setIsLiked] = useState<boolean>();
+  const [rating, setRating] = useState<number>();
+  const [review, setReview] = useState<string>();
 
   useEffect(() => {
     async function loadDetails() {
@@ -25,6 +30,21 @@ export function FilmDetailPage() {
         setFilmDetails(details);
         const wishlist = await getWishlist(user, filmId);
         setIsOnWishlist(wishlist);
+        const previousRating = await getFilmRating(filmId);
+        if (previousRating) {
+          setIsLogged(true);
+        } else {
+          return;
+        }
+        if (previousRating.liked) {
+          setIsLiked(true);
+        }
+        if (previousRating.rating) {
+          setRating(previousRating.rating / 2);
+        }
+        if (previousRating.review) {
+          setReview(previousRating.review);
+        }
       } catch (err) {
         setError(err);
       } finally {
@@ -52,7 +72,7 @@ export function FilmDetailPage() {
   }
 
   if (error || !filmDetails) {
-    return <h3 style={{ color: 'white' }}>Film not found!</h3>;
+    return <h3 style={{ color: 'white' }}>{`${error}`}</h3>;
   }
 
   return (
@@ -111,6 +131,10 @@ export function FilmDetailPage() {
         <div className="rating-column">
           <RatingComponent
             onWishlist={isOnWishlist}
+            liked={isLiked}
+            logged={isLogged}
+            review={review}
+            rating={rating}
             onWishlistClick={() => handleModifyWishlist()}
             filmDetails={filmDetails}
           />
