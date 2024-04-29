@@ -73,7 +73,7 @@ export async function verifySignIn(
 }
 
 export async function getDetails(
-  filmId: string | undefined
+  filmId: string | number | undefined
 ): Promise<FilmDetails> {
   const detailsResp = await fetch(`/api/films/${filmId}`);
   if (!detailsResp.ok) throw new Error('Failed to fetch film details');
@@ -138,7 +138,7 @@ export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
       Authorization: `Bearer ${readToken()}`,
     },
   };
-  const recentResp = await fetch('/api/films/recent', req);
+  const recentResp = await fetch('/api/films/ratings/recent', req);
   if (!recentResp.ok) throw new Error('Fetch failed');
   const recentList = await recentResp.json();
   const formRecentList = recentList.map((recent) => ({
@@ -178,6 +178,21 @@ export async function getFullWishlist(): Promise<FilmPosterDetails[]> {
   if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
   const wishlist = await wishlistResp.json();
   const formWishlist = wishlist.map((wish) => {
+    return { id: wish.filmTMDbId, poster_path: wish.filmPosterPath };
+  });
+  return formWishlist;
+}
+
+export async function getFilmList(): Promise<FilmPosterDetails[]> {
+  const filmListReq = {
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const filmListResp = await fetch('/api/films/ratings/watched', filmListReq);
+  if (!filmListResp.ok) throw new Error(`${filmListResp.status}`);
+  const filmList = await filmListResp.json();
+  const formWishlist = filmList.map((wish) => {
     return { id: wish.filmTMDbId, poster_path: wish.filmPosterPath };
   });
   return formWishlist;
@@ -275,4 +290,31 @@ export async function addFilmRating(
   }
   const ratingEntry = await res.json();
   return ratingEntry;
+}
+
+export async function getFilmRating(
+  filmTMDbId: string | undefined
+): Promise<RatingEntry | undefined> {
+  const req = {
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const res = await fetch(`/api/films/ratings/${filmTMDbId}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch Error: ${res.status}`);
+  }
+  const rating = (await res.json())[0] as RatingEntry;
+  return rating;
+}
+
+export async function getReviews(): Promise<RatingEntry[]> {
+  const req = {
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const resp = await fetch('/api/films/reviews', req);
+  const reviews = await resp.json();
+  return reviews;
 }

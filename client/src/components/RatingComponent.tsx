@@ -12,18 +12,27 @@ type Prop = {
   onWishlistClick: () => void;
   onWishlist: boolean;
   filmDetails: FilmDetails;
+  liked?: boolean;
+  logged?: boolean;
+  review?: string;
+  rating?: number;
 };
 
 export function RatingComponent({
   onWishlistClick,
   filmDetails,
   onWishlist,
+  liked,
+  logged,
+  review,
+  rating,
 }: Prop) {
   const [isRating, setIsRating] = useState(false);
   const [reviewIsOpen, setReviewIsOpen] = useState(false);
-  const [reviewValue, setReviewValue] = useState('');
-  const [ratingValue, setRatingValue] = useState<number>(0);
-  const [likedChecked, setLikeChecked] = useState(false);
+  const [isLogged, setIsLogged] = useState(logged ?? false);
+  const [reviewValue, setReviewValue] = useState(review ?? '');
+  const [ratingValue, setRatingValue] = useState<number>(rating ?? 0);
+  const [likedChecked, setLikeChecked] = useState(liked ?? false);
   const { user } = useUser();
 
   async function handleAddRatingEntry() {
@@ -40,12 +49,9 @@ export function RatingComponent({
           filmDetails
         );
         alert('successfully added to log');
+        setIsLogged(true);
       } catch (err) {
         alert(`Error adding to log: ${err}`);
-      } finally {
-        setReviewValue('');
-        setRatingValue(0);
-        setLikeChecked(false);
       }
     }
   }
@@ -55,7 +61,9 @@ export function RatingComponent({
       <div className="rating-container">
         <div className="row rating-row">
           <div
-            className={isRating ? 'column-third selected' : 'column-third'}
+            className={
+              isRating || isLogged ? 'column-third selected' : 'column-third'
+            }
             onClick={() => {
               if (isRating) {
                 setIsRating(false);
@@ -67,7 +75,7 @@ export function RatingComponent({
               }
             }}>
             <FaEye color={'#6D6056'} size={'3rem'} />
-            <h5>Log</h5>
+            <h5>{isLogged ? 'Logged' : 'Log'}</h5>
           </div>
           <div
             className="column-third"
@@ -81,7 +89,6 @@ export function RatingComponent({
                 setLikeChecked(true);
               }
             }}>
-            {/* Fix this so that onLikedClick toggles or doesn't log. */}
             <label>
               <input
                 type="checkBox"
@@ -90,7 +97,8 @@ export function RatingComponent({
                 onChange={() => setLikeChecked(likedChecked)}
               />
               <FaThumbsUp color={'#6D6056'} size={'3rem'} />
-              Like
+              <br />
+              {isLogged ? 'Liked' : 'Like'}
             </label>
           </div>
           <div
@@ -102,29 +110,25 @@ export function RatingComponent({
         </div>
         <div className="row rating-row">
           <div className="column">
-            <h5>Rate</h5>
+            <h5>{isLogged ? 'Rated' : 'Rate'}</h5>
             <input type="hidden" name="rating" value={ratingValue} />
             <StarComponent
               onClick={(rating: number) => {
                 setRatingValue(rating);
+                if (!isRating) {
+                  setIsRating(true);
+                }
               }}
               ratingValue={ratingValue}
             />
           </div>
         </div>
-        <div className="row rating-row selectable">
-          <h5>Show your activity</h5>
-        </div>
         <div
           className="row rating-row selectable"
           onClick={() => {
-            if (isRating) {
-              setReviewIsOpen(true);
-            } else {
-              alert('Please start logging to add a review!');
-            }
+            setReviewIsOpen(true);
           }}>
-          <h5>Review</h5>
+          <h5>{isLogged ? 'View Review' : 'Add Review'}</h5>
         </div>
       </div>
       <Modal
@@ -132,27 +136,36 @@ export function RatingComponent({
           setReviewIsOpen(false);
         }}
         isOpen={reviewIsOpen}>
-        <div className="row">
-          <h1>Add Review</h1>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <h1>{isLogged ? 'Your Review!' : 'Add Review'}</h1>
           <span onClick={() => setReviewIsOpen(false)}>
             <FaX />
           </span>
         </div>
-        <textarea
-          name="review"
-          placeholder="Please enter a review"
-          value={reviewValue}
-          onChange={(e) => {
-            setReviewValue(e.currentTarget.value);
-          }}
-        />
-        <Button
-          text="Add Review"
-          onClick={(e) => {
-            e.preventDefault();
-            setReviewIsOpen(false);
-          }}
-        />
+        {isLogged ? (
+          <h2>{reviewValue}</h2>
+        ) : (
+          <>
+            <textarea
+              name="review"
+              placeholder="Please enter a review"
+              value={reviewValue}
+              onChange={(e) => {
+                setReviewValue(e.currentTarget.value);
+              }}
+            />
+            <Button
+              text="Add Review"
+              onClick={(e) => {
+                e.preventDefault();
+                setReviewIsOpen(false);
+                if (!isRating) {
+                  setIsRating(true);
+                }
+              }}
+            />
+          </>
+        )}
       </Modal>
       <div
         className="row"

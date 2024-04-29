@@ -1,0 +1,11 @@
+.row.list-nav-row {
+  color: white;
+  font-family: Barlow, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-size: 1.3rem;
+}
+
+.row.list-nav-row .clickable:hover {
+  cursor: pointer;
+}

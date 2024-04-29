@@ -6,7 +6,6 @@ import {
   authMiddleware,
   defaultMiddleware,
   errorMiddleware,
-  // authMiddleware,
 } from './lib/index.js';
 import fetch from 'node-fetch';
 import argon2 from 'argon2';
@@ -46,6 +45,7 @@ type Rating = {
   liked: boolean | null;
   rating: number;
   userId: number;
+  review?: string;
 };
 
 const hashKey = process.env.TOKEN_SECRET;
@@ -125,22 +125,6 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-app.get('/api/films/recent', authMiddleware, async (req, res, next) => {
-  try {
-    const sql = `
-    select *
-      from "filmLogs"
-      where "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1)
-      order by "dateWatched"
-      limit 6;
-    `;
-    const resp = await db.query(sql, [req.user?.userId]);
-    res.json(resp.rows);
-  } catch (err) {
-    next(err);
-  }
-});
-
 app.get(`/api/films/popular`, async (req, res, next) => {
   try {
     const popularFilmsResp = await fetch(
@@ -155,37 +139,13 @@ app.get(`/api/films/popular`, async (req, res, next) => {
   }
 });
 
-app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
-  try {
-    const { filmTMDbId } = req.params;
-    if (!Number.isInteger(+filmTMDbId)) {
-      throw new ClientError(400, 'filmId must be a number');
-    }
-    const filmDetailsResp = await fetch(
-      `https://api.themoviedb.org/3/movie/${filmTMDbId}`,
-      tmdbOptions
-    );
-    if (!filmDetailsResp.ok) throw new Error('Unable to fetch details');
-    const filmDetails = (await filmDetailsResp.json()) as object;
-    const filmCreditsResp = await fetch(
-      `https://api.themoviedb.org/3/movie/${filmTMDbId}/credits`,
-      tmdbOptions
-    );
-    if (!filmCreditsResp.ok) throw new Error('Unable to fetch details');
-    const filmCredits = (await filmCreditsResp.json()) as object;
-    const fullDetails = { ...filmDetails, ...filmCredits };
-    res.json(fullDetails);
-  } catch (err) {
-    next(err);
-  }
-});
-
 app.get('/api/wishlists', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
     select *
     from "filmWishlists"
-    where "userId" = $1;
+    where "userId" = $1
+    order by "createdAt" desc;
     `;
     const resp = await db.query(sql, [req.user?.userId]);
     res.json(resp.rows);
@@ -206,8 +166,7 @@ app.get(
       const sql = `
     select *
     from "filmWishlists"
-    where "userId" = $1 and "filmTMDbId" = $2
-    order by "createdAt" desc;
+    where "userId" = $1 and "filmTMDbId" = $2;
     `;
       const params = [req.user?.userId, filmTMDbId];
       const resp = await db.query(sql, params);
@@ -407,26 +366,26 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
       highestUserId: null,
       highCorr: -Infinity,
     };
-    usersSet.forEach((comparitorUserId) => {
-      const comparitorRatings = otherRatings
-        .filter((rating) => rating.userId === comparitorUserId)
+    usersSet.forEach((comparatorUserId) => {
+      const comparatorRatings = otherRatings
+        .filter((rating) => rating.userId === comparatorUserId)
         .map((rating) => rating.rating);
-      if (comparitorRatings.length < 10) {
+      if (comparatorRatings.length < 10) {
         return;
       }
-      const comparitorMovies = otherRatings
-        .filter((rating) => rating.userId === comparitorUserId)
+      const comparatorMovies = otherRatings
+        .filter((rating) => rating.userId === comparatorUserId)
         .map((rating) => rating.filmTMDbId);
       const filteredUserRatings = activeUserRatings
-        .filter((rating) => comparitorMovies.includes(rating.filmTMDbId))
+        .filter((rating) => comparatorMovies.includes(rating.filmTMDbId))
         .map((rating) => rating.rating);
       const correlation = calculateCorrelation(
         filteredUserRatings,
-        comparitorRatings
+        comparatorRatings
       );
       if (correlation > highestCorr.highCorr) {
         highestCorr.highCorr = correlation;
-        highestCorr.highestUserId = comparitorUserId;
+        highestCorr.highestUserId = comparatorUserId;
       }
     });
     if (!highestCorr.highestUserId) {
@@ -568,26 +527,26 @@ app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
       highestUserId: null,
       highCorr: -Infinity,
     };
-    usersSet.forEach((comparitorUserId) => {
-      const comparitorRatings = otherRatings
-        .filter((rating) => rating.userId === comparitorUserId)
+    usersSet.forEach((comparatorUserId) => {
+      const comparatorRatings = otherRatings
+        .filter((rating) => rating.userId === comparatorUserId)
         .map((rating) => rating.rating);
-      if (comparitorRatings.length < 10) {
+      if (comparatorRatings.length < 10) {
         return;
       }
-      const comparitorMovies = otherRatings
-        .filter((rating) => rating.userId === comparitorUserId)
+      const comparatorMovies = otherRatings
+        .filter((rating) => rating.userId === comparatorUserId)
         .map((rating) => rating.filmTMDbId);
       const filteredUserRatings = activeUserRatings
-        .filter((rating) => comparitorMovies.includes(rating.filmTMDbId))
+        .filter((rating) => comparatorMovies.includes(rating.filmTMDbId))
         .map((rating) => rating.rating);
       const correlation = calculateCorrelation(
         filteredUserRatings,
-        comparitorRatings
+        comparatorRatings
       );
       if (correlation > highestCorr.highCorr) {
         highestCorr.highCorr = correlation;
-        highestCorr.highestUserId = comparitorUserId;
+        highestCorr.highestUserId = comparatorUserId;
       }
     });
     if (!highestCorr.highestUserId) {
@@ -733,6 +692,112 @@ app.post(
     }
   }
 );
+
+app.get(
+  '/api/films/ratings/watched',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const watchedSql = `
+      select distinct "filmTMDbId", "filmPosterPath", "dateWatched"
+        from "filmLogs"
+        where "userId" = $1
+        ORDER BY "dateWatched" desc;
+    `;
+      const watchedResp = await db.query(watchedSql, [req.user?.userId]);
+      const watched = watchedResp.rows;
+      res.json(watched);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get('/api/films/ratings/recent', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+    select *
+      from "filmLogs"
+      where "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1)
+      order by "dateWatched"
+      limit 6;
+    `;
+    const resp = await db.query(sql, [req.user?.userId]);
+    res.json(resp.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(
+  '/api/films/ratings/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const filmRatingSQL = `
+      select "filmTMDbId", "userId", "review", "rating", "liked"
+        from "filmLogs"
+        where "filmTMDbId" = $1 and
+        "userId" = $2;
+    `;
+      const filmRatingResponse = await db.query(filmRatingSQL, [
+        filmTMDbId,
+        req.user?.userId,
+      ]);
+      const filmRating = filmRatingResponse.rows;
+      res.json(filmRating);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get('/api/films/reviews', authMiddleware, async (req, res, next) => {
+  try {
+    const recentReviewsSql = `
+      select "filmTMDbId", "filmPosterPath", "dateWatched", "review", "createdAt"
+        from "filmLogs"
+        where "userId" = $1 and
+        "review" IS NOT NULL
+        order by "createdAt" desc
+        limit 10;
+    `;
+    const reviewResp = await db.query(recentReviewsSql, [req.user?.userId]);
+    const reviews = reviewResp.rows;
+    res.json(reviews);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
+  try {
+    const { filmTMDbId } = req.params;
+    if (!Number.isInteger(+filmTMDbId)) {
+      throw new ClientError(400, 'filmId must be a number');
+    }
+    const filmDetailsResp = await fetch(
+      `https://api.themoviedb.org/3/movie/${filmTMDbId}`,
+      tmdbOptions
+    );
+    if (!filmDetailsResp.ok) throw new Error('Unable to fetch details');
+    const filmDetails = (await filmDetailsResp.json()) as object;
+    const filmCreditsResp = await fetch(
+      `https://api.themoviedb.org/3/movie/${filmTMDbId}/credits`,
+      tmdbOptions
+    );
+    if (!filmCreditsResp.ok) throw new Error('Unable to fetch details');
+    const filmCredits = (await filmCreditsResp.json()) as object;
+    const fullDetails = { ...filmDetails, ...filmCredits };
+    res.json(fullDetails);
+  } catch (err) {
+    next(err);
+  }
+});
 
 /*
  * Middleware that handles paths that aren't handled by static middleware
