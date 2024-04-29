@@ -81,7 +81,6 @@ export function RatingComponent({
                 setLikeChecked(true);
               }
             }}>
-            {/* Fix this so that onLikedClick toggles or doesn't log. */}
             <label>
               <input
                 type="checkBox"
@@ -90,6 +89,7 @@ export function RatingComponent({
                 onChange={() => setLikeChecked(likedChecked)}
               />
               <FaThumbsUp color={'#6D6056'} size={'3rem'} />
+              <br />
               Like
             </label>
           </div>
@@ -107,6 +107,9 @@ export function RatingComponent({
             <StarComponent
               onClick={(rating: number) => {
                 setRatingValue(rating);
+                if (!isRating) {
+                  setIsRating(true);
+                }
               }}
               ratingValue={ratingValue}
             />
@@ -118,10 +121,9 @@ export function RatingComponent({
         <div
           className="row rating-row selectable"
           onClick={() => {
-            if (isRating) {
-              setReviewIsOpen(true);
-            } else {
-              alert('Please start logging to add a review!');
+            setReviewIsOpen(true);
+            if (!isRating) {
+              setIsRating(true);
             }
           }}>
           <h5>Review</h5>

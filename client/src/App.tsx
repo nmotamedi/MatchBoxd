@@ -10,6 +10,9 @@ import { readUser, saveToken, saveUser } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
 import { SearchPage } from './pages/SearchPage';
 import { Comparison } from './pages/Comparison';
+import { FilmListPage } from './pages/FilmListPage';
+import { ReviewsPage } from './pages/ReviewsPage';
+import { Profile } from './pages/Profile';
 
 export type FilmPosterDetails = {
   id: number;
@@ -36,7 +39,7 @@ export type Comparator = {
   overlappingRatings: string;
   overlappingWatched: string;
   recommendations: (RatingEntry & { filmPosterPath: string })[];
-  recentReview: (RatingEntry & { filmPosterPath: string })[];
+  recentReviews: (RatingEntry & { filmPosterPath: string })[];
 };
 
 export type RatingEntry = {
@@ -45,6 +48,7 @@ export type RatingEntry = {
   rating?: number;
   liked?: boolean;
   userId: number;
+  dateWatched?: string;
 };
 
 export default function App() {
@@ -80,8 +84,11 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="/film/:filmId" element={<FilmDetailPage />} />
             <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/filmlist" element={<FilmListPage />} />
+            <Route path="/reviewsList" element={<ReviewsPage />} />
             <Route path="/search/:query" element={<SearchPage />} />
             <Route path="/comparison" element={<Comparison />} />
+            <Route path="/profile/:userId" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

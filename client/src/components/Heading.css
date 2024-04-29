@@ -75,3 +75,16 @@ input::placeholder {
 .sign-in-form::backdrop {
   background: rgba(23, 22, 22, 0.955);
 }
+
+.search-row {
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  background-color: #ee142d43;
+  height: 100%;
+  border-radius: 0 0 0 6px;
+}
+
+.search-row input {
+  width: 50%;
+}

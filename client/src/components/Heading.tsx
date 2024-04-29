@@ -12,7 +12,7 @@ import { postSignUp, verifySignIn } from '../lib/data';
 
 export function Heading() {
   const nav = useNavigate();
-  const { user, handleSignIn, handleSignOut } = useUser();
+  const { user, handleSignIn } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signInIsOpen, setSignInIsOpen] = useState(false);
   const [signUpIsOpen, setSignUpIsOpen] = useState(false);
@@ -68,23 +68,25 @@ export function Heading() {
         <div className="header-column column-half">
           {user && !searchIsOpen && (
             <>
-              <h3>REVIEWS</h3>
-              <h3 onClick={() => nav('/wishlist')}>WISHLIST</h3>
+              <h3 onClick={() => nav('/reviewsList')}>REVIEWS</h3>
+              <h3 onClick={() => nav('/filmlist')}>MY FILMS</h3>
               <h3 onClick={() => nav('/comparison')}>COMPARISON</h3>
               <span onClick={() => setSearchIsOpen(true)}>
                 <FaMagnifyingGlass color="white" />
               </span>
-              <Button text="LOG" />
-              <ProfileIcon onClick={handleSignOut} text={user.username[0]} />
+              <ProfileIcon
+                onClick={() => nav(`/profile/${user.userId}`)}
+                text={user.username[0]}
+              />
             </>
           )}
           {user && searchIsOpen && (
-            <>
+            <div className="row search-row">
               <span onClick={() => setSearchIsOpen(false)}>
                 <FaX color="white" />
               </span>
               <Search handleClose={() => setSearchIsOpen(false)} />
-            </>
+            </div>
           )}
           {!user && !signInIsOpen && (
             <>
