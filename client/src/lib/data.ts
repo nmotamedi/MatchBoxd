@@ -2,6 +2,7 @@ import {
   Comparator,
   FilmDetails,
   FilmPosterDetails,
+  ProfileDetails,
   RatingEntry,
 } from '../App';
 import { User } from '../components/UserContext';
@@ -199,7 +200,7 @@ export async function getFilmList(): Promise<FilmPosterDetails[]> {
 }
 
 export async function verifyFollower(
-  userDetails
+  userId: number
 ): Promise<[number | undefined]> {
   const followerReq = {
     headers: {
@@ -207,10 +208,7 @@ export async function verifyFollower(
       Authorization: `Bearer ${readToken()}`,
     },
   };
-  const followerResp = await fetch(
-    `/api/follow/${userDetails.userId}`,
-    followerReq
-  );
+  const followerResp = await fetch(`/api/follow/${userId}`, followerReq);
   if (!followerResp.ok) throw new Error(`${followerResp.status}`);
   const isFollower = await followerResp.json();
   return isFollower;
@@ -315,6 +313,20 @@ export async function getReviews(): Promise<RatingEntry[]> {
     },
   };
   const resp = await fetch('/api/films/reviews', req);
+  if (!resp.ok) {
+    throw new Error(`Fetch Error: ${resp.status}`);
+  }
   const reviews = await resp.json();
   return reviews;
+}
+
+export async function getProfileDetails(
+  userId: number
+): Promise<ProfileDetails> {
+  const resp = await fetch(`/api/profile/${userId}`);
+  if (!resp.ok) {
+    throw new Error(`Fetch Error: ${resp.status}`);
+  }
+  const profileDetails = await resp.json();
+  return profileDetails;
 }

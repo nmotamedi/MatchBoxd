@@ -50,7 +50,7 @@ export function FilmListPage() {
   }
 
   return (
-    <div style={{ margin: '2rem' }}>
+    <div style={{ margin: '2rem', marginBottom: '0' }}>
       <div
         className="row list-nav-row"
         style={{ justifyContent: 'flex-start' }}>

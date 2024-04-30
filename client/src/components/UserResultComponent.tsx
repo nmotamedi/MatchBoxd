@@ -3,6 +3,7 @@ import { ProfileIcon } from './ProfileIcon';
 import { addOrDeleteFollower, verifyFollower } from '../lib/data';
 import { useUser } from './useUser';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type Prop = {
   userDetails: {
@@ -13,13 +14,14 @@ type Prop = {
 
 export function UserResultComponent({ userDetails }: Prop) {
   const { user } = useUser();
+  const nav = useNavigate();
   const [isFollowing, setIsFollowing] = useState<boolean>();
 
   useEffect(() => {
     async function readFollower() {
       if (user) {
         try {
-          const [isFollower] = await verifyFollower(userDetails);
+          const [isFollower] = await verifyFollower(userDetails.userId);
           if (isFollower) {
             setIsFollowing(true);
           } else {
@@ -50,7 +52,9 @@ export function UserResultComponent({ userDetails }: Prop) {
     <span>
       <div className="row search search-result-wrapper">
         <div className="column-half">
-          <div className="row search search-result-wrapper search-result-info">
+          <div
+            className="row search search-result-wrapper search-result-info"
+            onClick={() => nav(`/profile/${userDetails.userId}`)}>
             <ProfileIcon text={userDetails.username[0]} />
             <h4>{userDetails.username}</h4>
           </div>
