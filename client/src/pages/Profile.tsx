@@ -4,10 +4,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './Profile.css';
 import { ProfileDetails } from '../App';
 import { useEffect, useState } from 'react';
-import { getProfileDetails } from '../lib/data';
+import {
+  addOrDeleteFollower,
+  getProfileDetails,
+  verifyFollower,
+} from '../lib/data';
 import { ProfileIcon } from '../components/ProfileIcon';
 import { Catalog } from '../components/Catalog';
 import { ReviewDisplayComponent } from '../components/ReviewDisplayComponent';
+import { FaPlus, FaUserCheck } from 'react-icons/fa6';
 
 export function Profile() {
   const { user, handleSignOut } = useUser();
@@ -17,6 +22,7 @@ export function Profile() {
   const [profileDetails, setProfileDetails] = useState<ProfileDetails>();
   const [error, setError] = useState<unknown>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isFollowing, setIsFollowing] = useState<boolean>();
 
   useEffect(() => {
     async function readProfileDetails() {
@@ -32,8 +38,40 @@ export function Profile() {
         setIsLoading(false);
       }
     }
+    async function readFollower() {
+      if (!user) {
+        return;
+      }
+      try {
+        if (!profileId) {
+          throw new Error('Profile number is needed');
+        }
+        const [isFollower] = await verifyFollower(+profileId);
+        if (isFollower) {
+          setIsFollowing(true);
+        } else {
+          setIsFollowing(false);
+        }
+      } catch (err) {
+        alert('follower error');
+      }
+    }
     readProfileDetails();
-  }, [profileId]);
+    readFollower();
+  }, [profileId, user]);
+
+  async function handleFollowClick(userId: number) {
+    if (!user) {
+      alert('Please sign up or log in to follow other users!');
+    } else {
+      try {
+        await addOrDeleteFollower(isFollowing, userId);
+        setIsFollowing(!isFollowing);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
 
   // Display data
 
@@ -51,12 +89,12 @@ export function Profile() {
 
   return (
     <div className="profile-container">
-      <div className="row">
+      <div className="row comparison-header">
         <div className="column-half">
           <div className="row">
             <ProfileIcon text={profileDetails.username[0]} />
             <h1>{profileDetails.username}</h1>
-            {user?.userId === +profileId && (
+            {user?.userId === +profileId ? (
               <Button
                 text="Sign Out"
                 onClick={() => {
@@ -64,6 +102,11 @@ export function Profile() {
                   nav('/');
                 }}
               />
+            ) : (
+              <span onClick={() => handleFollowClick(+profileId)}>
+                {!isFollowing && <FaPlus color="white" size="2rem" />}
+                {isFollowing && <FaUserCheck color="white" size="2rem" />}
+              </span>
             )}
           </div>
         </div>
@@ -82,7 +125,7 @@ export function Profile() {
       </div>
       <div className="row">
         <div className="column-half">
-          <div className="row">
+          <div className="row activity-img-row">
             <Catalog
               text="RECENT ACTIVITY"
               cards={profileDetails.recentLogs.map((log) => ({

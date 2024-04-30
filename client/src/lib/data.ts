@@ -200,7 +200,7 @@ export async function getFilmList(): Promise<FilmPosterDetails[]> {
 }
 
 export async function verifyFollower(
-  userDetails
+  userId: number
 ): Promise<[number | undefined]> {
   const followerReq = {
     headers: {
@@ -208,10 +208,7 @@ export async function verifyFollower(
       Authorization: `Bearer ${readToken()}`,
     },
   };
-  const followerResp = await fetch(
-    `/api/follow/${userDetails.userId}`,
-    followerReq
-  );
+  const followerResp = await fetch(`/api/follow/${userId}`, followerReq);
   if (!followerResp.ok) throw new Error(`${followerResp.status}`);
   const isFollower = await followerResp.json();
   return isFollower;

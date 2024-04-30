@@ -48,13 +48,15 @@ export function Comparison() {
       try {
         const compatibleAll = (await getMostCompatibleAll()) as Comparator;
         setMostCompatibleAll(compatibleAll);
+        if (!compatibleAll.highestUserId) {
+          return;
+        }
         const compatibleFollowing =
           (await getMostCompatibleFollowing()) as Comparator;
         setMostCompatibleFollowing(compatibleFollowing);
-        const [isFollowerAll] = await verifyFollower({
-          username: compatibleAll.username,
-          userId: compatibleAll.highestUserId,
-        });
+        const [isFollowerAll] = await verifyFollower(
+          compatibleAll.highestUserId
+        );
         if (isFollowerAll) {
           setIsFollowingAll(true);
         } else {

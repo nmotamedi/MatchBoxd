@@ -21,7 +21,7 @@ export function UserResultComponent({ userDetails }: Prop) {
     async function readFollower() {
       if (user) {
         try {
-          const [isFollower] = await verifyFollower(userDetails);
+          const [isFollower] = await verifyFollower(userDetails.userId);
           if (isFollower) {
             setIsFollowing(true);
           } else {
