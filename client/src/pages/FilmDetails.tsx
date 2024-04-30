@@ -106,7 +106,14 @@ export function FilmDetailPage() {
             </h4>
             &nbsp;
             <h4>
-              Directed by <b>{filmDetails.crew![0].name}</b>
+              Directed by{' '}
+              <b>
+                {
+                  filmDetails.crew!.find(
+                    (crewMember) => crewMember.job === 'Director'
+                  )?.name
+                }
+              </b>
             </h4>
           </div>
           <h4 className="tagline">{filmDetails.tagline}</h4>

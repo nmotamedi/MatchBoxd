@@ -142,7 +142,7 @@ export function Comparison() {
         <hr />
         <div className="row comparison-header">
           <div className="column-half">
-            <div className="row">
+            <div className="row comparison-profile">
               <ProfileIcon
                 text={
                   isAllView

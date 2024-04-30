@@ -10,20 +10,15 @@ import {
 import fetch from 'node-fetch';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
-// @ts-expect-error - Importing a JS package that does not have typing implemented.
-import calculateCorrelation from 'calculate-correlation';
 import {
   readFilmCount,
   readFollowerCount,
-  readOverlappingLiked,
-  readOverlappingRatings,
-  readOverlappingWatched,
   readRecentActivity,
   readRecentReviews,
-  readRecommendations,
   readUsername,
   readWishlist,
 } from './lib/user-queries.js';
+import { compareLogic } from './lib/comparison-logic.js';
 
 type User = {
   userId: number;
@@ -52,12 +47,25 @@ type FilmQueryResults = {
   results: FilmDetails[];
 };
 
-type Rating = {
+export type Rating = {
   filmTMDbId: number;
   liked: boolean | null;
   rating: number;
   userId: number;
   review?: string;
+};
+
+export type Comparator = {
+  highestUserId: number | undefined;
+  highCorr: number;
+  username?: string;
+  films?: string;
+  followers?: string;
+  overlappingLiked?: string;
+  overlappingRatings?: string;
+  overlappingWatched?: string;
+  recommendations?: (Rating & { filmPosterPath: string })[];
+  recentReviews?: (Rating & { filmPosterPath: string })[];
 };
 
 const hashKey = process.env.TOKEN_SECRET;
@@ -337,24 +345,12 @@ app.delete(
 
 app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
   try {
-    const activeUserRatingsSql = `
-      select "userId", "filmTMDbId", "rating", "liked"
-        from "filmLogs"
-        where "userId" = $1 and
-        "rating" IS NOT NULL
-        order by "filmTMDbId";
-      `;
     const activeUserId = req.user?.userId;
     if (!activeUserId) {
       throw new ClientError(400, 'userId is required.');
     }
-    const activeRatingsResp = await db.query(activeUserRatingsSql, [
-      activeUserId,
-    ]);
-    const activeUserRatings = activeRatingsResp.rows as Rating[];
-    if (activeUserRatings.length < 10) {
-      throw new ClientError(400, 'Too few reviews');
-    }
+    // This query pulls all film ratings from non-active users where the active
+    // user has also rated.
     const otherUsersRatingsSql = `
       select "userId", "filmTMDbId", "rating", "liked"
         from "filmLogs"
@@ -367,70 +363,7 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
       activeUserId,
     ]);
     const otherRatings = otherRatingsResp.rows as Rating[];
-    const usersSet = new Set(otherRatings.map((rating) => rating.userId));
-    const highestCorr: { highestUserId: null | number; highCorr: number } = {
-      highestUserId: null,
-      highCorr: -Infinity,
-    };
-    usersSet.forEach((comparatorUserId) => {
-      const comparatorRatings = otherRatings
-        .filter((rating) => rating.userId === comparatorUserId)
-        .map((rating) => rating.rating);
-      if (comparatorRatings.length < 10) {
-        return;
-      }
-      const comparatorMovies = otherRatings
-        .filter((rating) => rating.userId === comparatorUserId)
-        .map((rating) => rating.filmTMDbId);
-      const filteredUserRatings = activeUserRatings
-        .filter((rating) => comparatorMovies.includes(rating.filmTMDbId))
-        .map((rating) => rating.rating);
-      const correlation = calculateCorrelation(
-        filteredUserRatings,
-        comparatorRatings
-      );
-      if (correlation > highestCorr.highCorr) {
-        highestCorr.highCorr = correlation;
-        highestCorr.highestUserId = comparatorUserId;
-      }
-    });
-    if (!highestCorr.highestUserId) {
-      res.json(highestCorr);
-      return;
-    }
-    const comparatorId: number = highestCorr.highestUserId;
-    const username = await readUsername(comparatorId);
-    const filmCount = await readFilmCount(comparatorId);
-    const followingCount = await readFollowerCount(comparatorId);
-    const recommendations = await readRecommendations(
-      comparatorId,
-      activeUserId
-    );
-    const recentReviews = await readRecentReviews(comparatorId);
-    const overlappingWatched = await readOverlappingWatched(
-      activeUserId,
-      comparatorId
-    );
-    const overlappingLiked = await readOverlappingLiked(
-      activeUserId,
-      comparatorId
-    );
-    const overlappingRatings = await readOverlappingRatings(
-      activeUserId,
-      comparatorId
-    );
-
-    res.json({
-      ...highestCorr,
-      ...username,
-      ...filmCount,
-      ...followingCount,
-      recommendations: [...recommendations],
-      recentReviews: [...recentReviews],
-      ...overlappingWatched,
-      ...overlappingLiked,
-      ...overlappingRatings,
-    });
+    res.json(await compareLogic(activeUserId, otherRatings));
   } catch (err) {
     next(err);
   }
@@ -438,24 +371,12 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
 
 app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
   try {
-    const activeUserRatingsSql = `
-      select "userId", "filmTMDbId", "rating", "liked"
-        from "filmLogs"
-        where "userId" = $1 and
-        "rating" IS NOT NULL
-        order by "filmTMDbId";
-      `;
     const activeUserId = req.user?.userId;
     if (!activeUserId) {
       throw new ClientError(400, 'userId is required.');
     }
-    const activeRatingsResp = await db.query(activeUserRatingsSql, [
-      activeUserId,
-    ]);
-    const activeUserRatings = activeRatingsResp.rows as Rating[];
-    if (activeUserRatings.length < 10) {
-      throw new ClientError(400, 'Too few reviews');
-    }
+    // This query pulls all film ratings from non-active users that the active user
+    // follows where the active user has also rated.
     const otherUsersRatingsSql = `
       select "userId", "filmTMDbId", "rating", "liked"
         from "filmLogs"
@@ -469,69 +390,7 @@ app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
       activeUserId,
     ]);
     const otherRatings = otherRatingsResp.rows as Rating[];
-    const usersSet = new Set(otherRatings.map((rating) => rating.userId));
-    const highestCorr: { highestUserId: null | number; highCorr: number } = {
-      highestUserId: null,
-      highCorr: -Infinity,
-    };
-    usersSet.forEach((comparatorUserId) => {
-      const comparatorRatings = otherRatings
-        .filter((rating) => rating.userId === comparatorUserId)
-        .map((rating) => rating.rating);
-      if (comparatorRatings.length < 10) {
-        return;
-      }
-      const comparatorMovies = otherRatings
-        .filter((rating) => rating.userId === comparatorUserId)
-        .map((rating) => rating.filmTMDbId);
-      const filteredUserRatings = activeUserRatings
-        .filter((rating) => comparatorMovies.includes(rating.filmTMDbId))
-        .map((rating) => rating.rating);
-      const correlation = calculateCorrelation(
-        filteredUserRatings,
-        comparatorRatings
-      );
-      if (correlation > highestCorr.highCorr) {
-        highestCorr.highCorr = correlation;
-        highestCorr.highestUserId = comparatorUserId;
-      }
-    });
-    if (!highestCorr.highestUserId) {
-      res.json(highestCorr);
-      return;
-    }
-    const comparatorId: number = highestCorr.highestUserId;
-    const username = await readUsername(comparatorId);
-    const filmCount = await readFilmCount(comparatorId);
-    const followingCount = await readFollowerCount(comparatorId);
-    const recommendations = await readRecommendations(
-      comparatorId,
-      activeUserId
-    );
-    const recentReviews = await readRecentReviews(comparatorId);
-    const overlappingWatched = await readOverlappingWatched(
-      activeUserId,
-      comparatorId
-    );
-    const overlappingLiked = await readOverlappingLiked(
-      activeUserId,
-      comparatorId
-    );
-    const overlappingRatings = await readOverlappingRatings(
-      activeUserId,
-      comparatorId
-    );
-    res.json({
-      ...highestCorr,
-      ...username,
-      ...filmCount,
-      ...followingCount,
-      recommendations: [...recommendations],
-      recentReviews: [...recentReviews],
-      ...overlappingWatched,
-      ...overlappingLiked,
-      ...overlappingRatings,
-    });
+    await compareLogic(activeUserId, otherRatings);
   } catch (err) {
     next(err);
   }

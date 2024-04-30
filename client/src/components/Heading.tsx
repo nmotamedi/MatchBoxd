@@ -60,6 +60,36 @@ export function Heading() {
     }
   }
 
+  function validatePassword(typedValue: string) {
+    let message = '';
+
+    const passwordLength = typedValue.length;
+    const missingCriteria: string[] = [];
+
+    if (passwordLength === 0) {
+      message = 'A password is required';
+    } else if (passwordLength < 8) {
+      message = 'Your password is too short';
+    } else {
+      if (!/\d/.test(typedValue)) {
+        missingCriteria.push('number');
+      }
+      if (!/[A-Z]/.test(typedValue)) {
+        missingCriteria.push('uppercase letter');
+      }
+      if (!/[!@#$%^&*()]/.test(typedValue)) {
+        missingCriteria.push('special character');
+      }
+      if (missingCriteria.length > 0) {
+        message = 'Password Missing: ' + missingCriteria.join(', ') + '.';
+      }
+    }
+    return message;
+  }
+
+  const signInMessage: string = validatePassword(signInPassword);
+  const signUpMessage: string = validatePassword(signUpPassword);
+
   return (
     <>
       <div className="row heading">
@@ -118,8 +148,14 @@ export function Heading() {
                 onChange={(e) => setSignInPassword(e.currentTarget.value)}
                 required
               />
-              {/* <p>{signInMessage}</p> */}
-              <div>{!isSubmitting && <Button text="SIGN IN" />}</div>
+              <p style={{ color: 'white', fontSize: '0.75rem' }}>
+                {signInMessage}
+              </p>
+              <div>
+                {!isSubmitting && signInMessage.length === 0 && (
+                  <Button text="SIGN IN" />
+                )}
+              </div>
             </form>
           )}
         </div>
@@ -151,8 +187,12 @@ export function Heading() {
             value={signUpPassword}
             onChange={(e) => setSignUpPassword(e.currentTarget.value)}
           />
-          {/* <p>{signUpMessage}</p> */}
-          <div>{!isSubmitting && <Button text="Sign Up" />}</div>
+          <p>{signUpMessage}</p>
+          <div>
+            {!isSubmitting && signUpMessage.length === 0 && (
+              <Button text="Sign Up" />
+            )}
+          </div>
         </form>
       </Modal>
     </>

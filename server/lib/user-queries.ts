@@ -1,4 +1,4 @@
-import { db } from '../server';
+import { Rating, db } from '../server';
 
 export async function readUsername(
   userId: number
@@ -42,7 +42,7 @@ export async function readFollowerCount(
 export async function readRecommendations(
   comparatorId: number,
   activeUserId: number
-): Promise<unknown[]> {
+): Promise<(Rating & { filmPosterPath: string })[]> {
   const recommendationSql = `
       select "filmTMDbId", "filmPosterPath", "rating", "liked"
         from "filmLogs"
@@ -59,7 +59,9 @@ export async function readRecommendations(
   return recommendationResp.rows;
 }
 
-export async function readRecentReviews(userId: number): Promise<unknown[]> {
+export async function readRecentReviews(
+  userId: number
+): Promise<(Rating & { filmPosterPath: string })[]> {
   const recentReviewsSql = `
       select "filmTMDbId", "filmPosterPath", "dateWatched", "review"
         from "filmLogs"
@@ -137,7 +139,9 @@ export async function readWishlist(userId: number): Promise<unknown[]> {
   return resp.rows;
 }
 
-export async function readRecentActivity(userId: number): Promise<unknown[]> {
+export async function readRecentActivity(
+  userId: number
+): Promise<(Rating & { filmPosterPath: string })[]> {
   const sql = `
     select *
       from "filmLogs"

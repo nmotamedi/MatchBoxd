@@ -83,14 +83,21 @@
   align-items: center;
 }
 
-.comparison-header a:hover {
-  color: #870e0e;
-}
-
 .comparison-header .column-half {
   text-align: center;
 }
 
 .comparison-body img {
   width: 20%;
+}
+
+.comparison-profile a:hover {
+  background-color: #870e0e;
+  color: gray;
+  cursor: pointer;
+}
+
+.comparison-profile h1:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
