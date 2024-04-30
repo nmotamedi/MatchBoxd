@@ -5,7 +5,7 @@ import { Modal } from './Modal';
 import { useState } from 'react';
 import { StarComponent } from './StarComponent';
 import { useUser } from './useUser';
-import { addFilmRating } from '../lib/data';
+import { addFilmRating, deleteFilmRating } from '../lib/data';
 import { FilmDetails } from '../App';
 
 type Prop = {
@@ -53,6 +53,19 @@ export function RatingComponent({
       } catch (err) {
         alert(`Error adding to log: ${err}`);
       }
+    }
+  }
+
+  async function handleDeleteRatingEntry() {
+    setIsLogged(false);
+    try {
+      deleteFilmRating(filmDetails.id);
+      alert('Log deleted');
+      setReviewValue('');
+      setRatingValue(0);
+      setLikeChecked(false);
+    } catch (err) {
+      alert(`Error deleting from log: ${err}`);
     }
   }
 
@@ -167,11 +180,13 @@ export function RatingComponent({
           </>
         )}
       </Modal>
-      <div
-        className="row"
-        onClick={handleAddRatingEntry}
-        style={{ justifyContent: 'center' }}>
-        {isRating && <Button text="Submit Log" />}
+      <div className="row" style={{ justifyContent: 'center' }}>
+        {isRating && (
+          <Button onClick={handleAddRatingEntry} text="Submit Log" />
+        )}
+        {isLogged && (
+          <Button onClick={handleDeleteRatingEntry} text="Delete Log" />
+        )}
       </div>
     </>
   );

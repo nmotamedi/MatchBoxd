@@ -330,3 +330,16 @@ export async function getProfileDetails(
   const profileDetails = await resp.json();
   return profileDetails;
 }
+
+export async function deleteFilmRating(filmId: number): Promise<void> {
+  const req = {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const resp = await fetch(`/api/films/ratings/${filmId}`, req);
+  if (!resp.ok) {
+    throw new Error('Delete Error');
+  }
+}

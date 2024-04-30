@@ -583,6 +583,37 @@ app.post(
   }
 );
 
+app.delete(
+  `/api/films/ratings/:filmTMDbId`,
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new ClientError(400, 'userId is required.');
+      }
+      const sql = `
+      delete from "filmLogs"
+        where "userId" = $1 and
+        "filmTMDbId" = $2
+        returning *;
+    `;
+      const resp = await db.query(sql, [userId, filmTMDbId]);
+      const [row] = resp.rows;
+      if (!row) {
+        throw new ClientError(404, 'log with this filmId and userId not found');
+      }
+      res.sendStatus(204);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 app.get(
   '/api/films/ratings/watched',
   authMiddleware,
