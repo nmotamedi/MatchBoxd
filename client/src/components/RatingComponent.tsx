@@ -5,7 +5,7 @@ import { Modal } from './Modal';
 import { useState } from 'react';
 import { StarComponent } from './StarComponent';
 import { useUser } from './useUser';
-import { addFilmRating } from '../lib/data';
+import { addFilmRating, deleteFilmRating, updateFilmRating } from '../lib/data';
 import { FilmDetails } from '../App';
 
 type Prop = {
@@ -35,24 +35,46 @@ export function RatingComponent({
   const [likedChecked, setLikeChecked] = useState(liked ?? false);
   const { user } = useUser();
 
-  async function handleAddRatingEntry() {
+  async function handleAddOrUpdateRatingEntry() {
     setIsRating(false);
     if (!user) {
       alert("Please sign up or log in to log what you've seen!");
     } else {
       try {
         if (!filmDetails) throw new Error('Details are required.');
-        await addFilmRating(
-          reviewValue,
-          ratingValue,
-          likedChecked,
-          filmDetails
-        );
-        alert('successfully added to log');
+        isLogged
+          ? await updateFilmRating(
+              reviewValue,
+              ratingValue,
+              likedChecked,
+              filmDetails
+            )
+          : await addFilmRating(
+              reviewValue,
+              ratingValue,
+              likedChecked,
+              filmDetails
+            );
+        isLogged
+          ? alert('successfully updated log')
+          : alert('successfully added to log');
         setIsLogged(true);
       } catch (err) {
-        alert(`Error adding to log: ${err}`);
+        alert(`Error: ${err}`);
       }
+    }
+  }
+
+  async function handleDeleteRatingEntry() {
+    setIsLogged(false);
+    try {
+      deleteFilmRating(filmDetails.id);
+      alert('Log deleted');
+      setReviewValue('');
+      setRatingValue(0);
+      setLikeChecked(false);
+    } catch (err) {
+      alert(`Error deleting from log: ${err}`);
     }
   }
 
@@ -167,11 +189,16 @@ export function RatingComponent({
           </>
         )}
       </Modal>
-      <div
-        className="row"
-        onClick={handleAddRatingEntry}
-        style={{ justifyContent: 'center' }}>
-        {isRating && <Button text="Submit Log" />}
+      <div className="row" style={{ justifyContent: 'center' }}>
+        {isLogged && (
+          <Button onClick={handleDeleteRatingEntry} text="Delete Log" />
+        )}
+        {isRating && (
+          <Button
+            onClick={handleAddOrUpdateRatingEntry}
+            text={isLogged ? 'Update Log' : 'Submit Log'}
+          />
+        )}
       </div>
     </>
   );

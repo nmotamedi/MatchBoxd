@@ -290,6 +290,33 @@ export async function addFilmRating(
   return ratingEntry;
 }
 
+export async function updateFilmRating(
+  reviewValue: string,
+  ratingValue: number,
+  likedChecked: boolean,
+  filmDetails: FilmDetails
+): Promise<RatingEntry> {
+  const body = {
+    review: reviewValue,
+    rating: ratingValue,
+    liked: likedChecked,
+  };
+  const req = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+    body: JSON.stringify(body),
+  };
+  const res = await fetch(`/api/films/ratings/${filmDetails.id}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch error: ${res.status}`);
+  }
+  const ratingEntry = await res.json();
+  return ratingEntry;
+}
+
 export async function getFilmRating(
   filmTMDbId: string | undefined
 ): Promise<RatingEntry | undefined> {
@@ -329,4 +356,17 @@ export async function getProfileDetails(
   }
   const profileDetails = await resp.json();
   return profileDetails;
+}
+
+export async function deleteFilmRating(filmId: number): Promise<void> {
+  const req = {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${readToken()}`,
+    },
+  };
+  const resp = await fetch(`/api/films/ratings/${filmId}`, req);
+  if (!resp.ok) {
+    throw new Error('Delete Error');
+  }
 }
