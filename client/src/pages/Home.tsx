@@ -3,7 +3,7 @@ import { Catalog } from '../components/Catalog';
 import { FilmDetails, FilmPosterDetails } from '../App';
 import { useUser } from '../components/useUser';
 import './Home.css';
-import { getPopularFilms, getRecentFilms } from '../lib/data';
+import { fetchPopularFilms, fetchRecentFilms } from '../lib/data';
 
 export function Home() {
   const [recentFilms, setRecentFilms] = useState<FilmPosterDetails[]>([]);
@@ -13,13 +13,13 @@ export function Home() {
   const { user } = useUser();
 
   useEffect(() => {
-    async function getFilms() {
+    async function readFilms() {
       try {
         if (user) {
-          const formRecentList = await getRecentFilms();
+          const formRecentList = await fetchRecentFilms();
           setRecentFilms(formRecentList);
         }
-        const popList = await getPopularFilms();
+        const popList = await fetchPopularFilms();
         setPopFilms(popList);
       } catch (err) {
         setError(err);
@@ -27,7 +27,7 @@ export function Home() {
         setIsLoading(false);
       }
     }
-    getFilms();
+    readFilms();
   }, [user]);
 
   if (isLoading) {

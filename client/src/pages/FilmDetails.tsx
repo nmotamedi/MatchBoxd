@@ -5,9 +5,9 @@ import './FilmDetails.css';
 import { RatingComponent } from '../components/RatingComponent';
 import {
   addToOrDeleteFromWishlist,
-  getDetails,
-  getFilmRating,
-  getWishlist,
+  fetchDetails,
+  fetchFilmRating,
+  fetchWishlist,
 } from '../lib/data';
 import { useUser } from '../components/useUser';
 
@@ -24,13 +24,13 @@ export function FilmDetailPage() {
   const [review, setReview] = useState<string>();
 
   useEffect(() => {
-    async function loadDetails() {
+    async function readDetails() {
       try {
-        const details = await getDetails(filmId);
+        const details = await fetchDetails(filmId);
         setFilmDetails(details);
-        const wishlist = await getWishlist(user, filmId);
+        const wishlist = await fetchWishlist(user, filmId);
         setIsOnWishlist(wishlist);
-        const previousRating = await getFilmRating(filmId);
+        const previousRating = await fetchFilmRating(filmId);
         if (previousRating) {
           setIsLogged(true);
         } else {
@@ -51,19 +51,19 @@ export function FilmDetailPage() {
         setIsLoading(false);
       }
     }
-    loadDetails();
+    readDetails();
   }, [filmId, user]);
 
   async function handleModifyWishlist() {
     if (!user) {
       alert('Please sign up or log in to save!');
-    } else {
-      try {
-        await addToOrDeleteFromWishlist(filmDetails, isOnWishlist);
-        setIsOnWishlist(!isOnWishlist);
-      } catch (err) {
-        alert(`Error adding to wishlist: ${err}`);
-      }
+      return;
+    }
+    try {
+      await addToOrDeleteFromWishlist(filmDetails, isOnWishlist);
+      setIsOnWishlist(!isOnWishlist);
+    } catch (err) {
+      alert(`Error adding to wishlist: ${err}`);
     }
   }
 

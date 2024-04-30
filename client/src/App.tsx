@@ -6,7 +6,7 @@ import { Home } from './pages/Home';
 import { FilmDetailPage } from './pages/FilmDetails';
 import { NotFound } from './pages/NotFound';
 import { User, UserProvider } from './components/UserContext';
-import { readUser, saveToken, saveUser } from './lib/data';
+import { readUser, saveUser } from './lib/data';
 import { WishlistPage } from './pages/WishlistPage';
 import { SearchPage } from './pages/SearchPage';
 import { Comparison } from './pages/Comparison';
@@ -67,12 +67,10 @@ export default function App() {
     setUser(user);
     setToken(token);
     saveUser({ user, token });
-    saveToken(token);
   }
   function handleSignOut() {
     setUser(undefined);
     setToken(undefined);
-    saveToken(undefined);
     saveUser(undefined);
   }
 

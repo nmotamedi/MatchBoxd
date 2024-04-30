@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getFullWishlist } from '../lib/data';
+import { fetchFullWishlist } from '../lib/data';
 import { useUser } from '../components/useUser';
 import { Catalog } from '../components/Catalog';
 import { FilmPosterDetails } from '../App';
@@ -20,7 +20,7 @@ export function WishlistPage() {
         return;
       }
       try {
-        const wishlist = await getFullWishlist();
+        const wishlist = await fetchFullWishlist();
         setWishlistFilms(wishlist);
       } catch (err) {
         setError(err);

@@ -4,7 +4,7 @@ import './Heading.css';
 import { Button } from './Button';
 import { useUser } from '../components/useUser';
 import { Modal } from './Modal';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { FaX } from 'react-icons/fa6';
 import { ProfileIcon } from './ProfileIcon';
 import { Search } from './Search';
@@ -24,7 +24,8 @@ export function Heading() {
   // const [signInMessage, setSignInMessage] = useState('');
   // const [signUpMessage, setSignUpMessage] = useState('');
 
-  async function handleSignUpSubmit() {
+  async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setIsSubmitting(true);
     try {
       const user = await postSignUp(signUpUsername, signUpPassword);
@@ -40,7 +41,8 @@ export function Heading() {
     }
   }
 
-  async function handleSignInSubmit() {
+  async function handleSignInSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setIsSubmitting(true);
     try {
       const { user, token } = await verifySignIn(
@@ -96,7 +98,7 @@ export function Heading() {
             </>
           )}
           {!user && signInIsOpen && (
-            <div className="row sign-in-form">
+            <form className="row sign-in-form" onSubmit={handleSignInSubmit}>
               <span onClick={() => setSignInIsOpen(false)}>
                 <FaX color="white" />
               </span>
@@ -105,6 +107,7 @@ export function Heading() {
                 placeholder="Username"
                 value={signInUsername}
                 onChange={(e) => setSignInUsername(e.currentTarget.value)}
+                required
               />
               <input
                 style={{ backgroundColor: 'gray', color: 'white' }}
@@ -113,12 +116,11 @@ export function Heading() {
                 placeholder="Password"
                 value={signInPassword}
                 onChange={(e) => setSignInPassword(e.currentTarget.value)}
+                required
               />
               {/* <p>{signInMessage}</p> */}
-              <div onClick={handleSignInSubmit}>
-                {!isSubmitting && <Button text="SIGN IN" />}
-              </div>
-            </div>
+              <div>{!isSubmitting && <Button text="SIGN IN" />}</div>
+            </form>
           )}
         </div>
       </div>
@@ -126,30 +128,32 @@ export function Heading() {
         <Outlet />
       </div>
       <Modal onClose={() => setSignUpIsOpen(false)} isOpen={signUpIsOpen}>
-        <div className="row">
-          <span onClick={() => setSignUpIsOpen(false)}>
-            <FaX color="white" />
-          </span>
-        </div>
-        <h2>JOIN MATCHBOXD</h2>
-        <h4>Username</h4>
-        <input
-          id="sign-up-username"
-          type="text"
-          value={signUpUsername}
-          onChange={(e) => setSignUpUsername(e.currentTarget.value)}
-        />
-        <h4>Password</h4>
-        <input
-          id="sign-up-password"
-          type="password"
-          value={signUpPassword}
-          onChange={(e) => setSignUpPassword(e.currentTarget.value)}
-        />
-        {/* <p>{signUpMessage}</p> */}
-        <div onClick={handleSignUpSubmit}>
-          {!isSubmitting && <Button text="Sign Up" />}
-        </div>
+        <form onSubmit={handleSignUpSubmit}>
+          <div className="row">
+            <span onClick={() => setSignUpIsOpen(false)}>
+              <FaX color="white" />
+            </span>
+          </div>
+          <h2>JOIN MATCHBOXD</h2>
+          <h4>Username</h4>
+          <input
+            id="sign-up-username"
+            type="text"
+            value={signUpUsername}
+            onChange={(e) => setSignUpUsername(e.currentTarget.value)}
+            required
+          />
+          <h4>Password</h4>
+          <input
+            id="sign-up-password"
+            required
+            type="password"
+            value={signUpPassword}
+            onChange={(e) => setSignUpPassword(e.currentTarget.value)}
+          />
+          {/* <p>{signUpMessage}</p> */}
+          <div>{!isSubmitting && <Button text="Sign Up" />}</div>
+        </form>
       </Modal>
     </>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { RatingEntry } from '../App';
-import { getReviews } from '../lib/data';
+import { fetchReviews } from '../lib/data';
 import { ReviewDisplayComponent } from '../components/ReviewDisplayComponent';
 import './ReviewsPage.css';
 
@@ -12,7 +12,7 @@ export function ReviewsPage() {
   useEffect(() => {
     async function readReviews() {
       try {
-        const revResp = await getReviews();
+        const revResp = await fetchReviews();
         setReviews(revResp);
       } catch (err) {
         setError(err);

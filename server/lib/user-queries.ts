@@ -56,8 +56,7 @@ export async function readRecommendations(
     comparatorId,
     activeUserId,
   ]);
-  const recommendations = recommendationResp.rows;
-  return recommendations;
+  return recommendationResp.rows;
 }
 
 export async function readRecentReviews(userId: number): Promise<unknown[]> {
@@ -70,8 +69,7 @@ export async function readRecentReviews(userId: number): Promise<unknown[]> {
         limit 3;
     `;
   const recentReviewsResp = await db.query(recentReviewsSql, [userId]);
-  const recentReviews = recentReviewsResp.rows;
-  return recentReviews;
+  return recentReviewsResp.rows;
 }
 
 export async function readOverlappingWatched(
@@ -131,9 +129,9 @@ export async function readOverlappingLiked(
 export async function readWishlist(userId: number): Promise<unknown[]> {
   const sql = `
     select *
-    from "filmWishlists"
-    where "userId" = $1
-    order by "createdAt" desc;
+      from "filmWishlists"
+      where "userId" = $1
+      order by "createdAt" desc;
     `;
   const resp = await db.query(sql, [userId]);
   return resp.rows;
@@ -142,10 +140,10 @@ export async function readWishlist(userId: number): Promise<unknown[]> {
 export async function readRecentActivity(userId: number): Promise<unknown[]> {
   const sql = `
     select *
-    from "filmLogs"
-    where "userId" = $1
-    order by "createdAt" desc
-    limit 4;
+      from "filmLogs"
+      where "userId" = $1
+      order by "createdAt" desc
+      limit 4;
     `;
   const resp = await db.query(sql, [userId]);
   return resp.rows;

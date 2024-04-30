@@ -144,8 +144,7 @@ app.get(`/api/films/popular`, async (req, res, next) => {
       tmdbOptions
     );
     if (!popularFilmsResp.ok) throw new Error('Unable to fetch films');
-    const popularFilms = await popularFilmsResp.json();
-    res.send(popularFilms);
+    res.send(await popularFilmsResp.json());
   } catch (err) {
     next(err);
   }
@@ -156,8 +155,7 @@ app.get('/api/wishlists', authMiddleware, async (req, res, next) => {
     if (!req.user?.userId) {
       throw new Error('Authentication required');
     }
-    const wishlistEntries = await readWishlist(req.user?.userId);
-    res.json(wishlistEntries);
+    res.json(await readWishlist(req.user?.userId));
   } catch (err) {
     next(err);
   }
@@ -173,10 +171,10 @@ app.get(
         throw new ClientError(400, 'filmId must be a number');
       }
       const sql = `
-    select *
-    from "filmWishlists"
-    where "userId" = $1 and "filmTMDbId" = $2;
-    `;
+        select *
+          from "filmWishlists"
+          where "userId" = $1 and "filmTMDbId" = $2;
+        `;
       const params = [req.user?.userId, filmTMDbId];
       const resp = await db.query(sql, params);
       res.json(resp.rows);
@@ -197,10 +195,10 @@ app.post(
         throw new ClientError(400, 'filmId must be a number');
       }
       const sql = `
-    insert into "filmWishlists"("filmTMDbId", "userId", "filmPosterPath")
-      values ($1, $2, $3)
-      returning *;
-    `;
+        insert into "filmWishlists"("filmTMDbId", "userId", "filmPosterPath")
+          values ($1, $2, $3)
+          returning *;
+        `;
       const param = [filmTMDbId, req.user?.userId, filmPosterPath];
       const resp = await db.query(sql, param);
       const [row] = resp.rows;
@@ -222,10 +220,10 @@ app.delete(
         throw new ClientError(400, `filmId must be a number`);
       }
       const sql = `
-      delete from "filmWishlists"
-        where "userId" = $1 and "filmTMDbId" = $2
-        returning *;
-      `;
+        delete from "filmWishlists"
+          where "userId" = $1 and "filmTMDbId" = $2
+          returning *;
+        `;
       const params = [req.user?.userId, filmTMDbId];
       const resp = await db.query(sql, params);
       const [row] = resp.rows;
@@ -242,10 +240,10 @@ app.get(`/api/search/:query`, async (req, res, next) => {
     const { query } = req.params;
     if (query === '') throw new ClientError(400, 'Query is required');
     const sql = `
-    select "username", "userId"
-    from "users"
-    where lower("username") like $1;
-    `;
+      select "username", "userId"
+        from "users"
+        where lower("username") like $1;
+      `;
     const userQueryResp = await db.query(sql, [`%${query}%`]);
     const userResults = userQueryResp.rows;
     const filmQueryResp = await fetch(
@@ -255,8 +253,7 @@ app.get(`/api/search/:query`, async (req, res, next) => {
     if (!filmQueryResp.ok) throw new Error('Unable to fetch films');
     const filmJSON = (await filmQueryResp.json()) as FilmQueryResults;
     const filmResults = filmJSON.results as FilmDetails[];
-    const queryResponse = { userResults, filmResults };
-    res.json(queryResponse);
+    res.json({ userResults, filmResults });
   } catch (err) {
     next(err);
   }
@@ -272,13 +269,12 @@ app.get(
         throw new ClientError(400, 'userId and followedUserId are required.');
       }
       const sql = `
-    select "followedUserId"
-    from "followLogs"
-    where "activeUserId" = $1 and "followedUserId" = $2;
-    `;
+        select "followedUserId"
+          from "followLogs"
+          where "activeUserId" = $1 and "followedUserId" = $2;
+          `;
       const resp = await db.query(sql, [req.user?.userId, followedUserId]);
-      const rows = resp.rows;
-      res.json(rows);
+      res.json(resp.rows);
     } catch (err) {
       next(err);
     }
@@ -296,10 +292,10 @@ app.post(
         throw new ClientError(400, 'userId and followedUserId are required.');
       }
       const sql = `
-    insert into "followLogs" ("activeUserId", "followedUserId")
-      values ($1, $2)
-      returning *;
-    `;
+        insert into "followLogs" ("activeUserId", "followedUserId")
+          values ($1, $2)
+          returning *;
+        `;
       const params = [activeUserId, followedUserId];
       const resp = await db.query(sql, params);
       const [row] = resp.rows;
@@ -321,10 +317,11 @@ app.delete(
         throw new ClientError(400, 'userId and followedUserId are required.');
       }
       const sql = `
-    delete from "followLogs"
-    where "activeUserId" = $1 and "followedUserId" = $2
-    returning *;
-    `;
+        delete from "followLogs"
+          where "activeUserId" = $1 and
+          "followedUserId" = $2
+          returning *;
+        `;
       const params = [activeUserId, followedUserId];
       const resp = await db.query(sql, params);
       const [row] = resp.rows;
@@ -341,12 +338,12 @@ app.delete(
 app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
   try {
     const activeUserRatingsSql = `
-    select "userId", "filmTMDbId", "rating", "liked"
-      from "filmLogs"
-      where "userId" = $1 and
-      "rating" IS NOT NULL
-      order by "filmTMDbId";
-    `;
+      select "userId", "filmTMDbId", "rating", "liked"
+        from "filmLogs"
+        where "userId" = $1 and
+        "rating" IS NOT NULL
+        order by "filmTMDbId";
+      `;
     const activeUserId = req.user?.userId;
     if (!activeUserId) {
       throw new ClientError(400, 'userId is required.');
@@ -359,13 +356,13 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
       throw new ClientError(400, 'Too few reviews');
     }
     const otherUsersRatingsSql = `
-    select "userId", "filmTMDbId", "rating", "liked"
-      from "filmLogs"
-      where "userId" != $1 and
-      "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
-      "rating" IS NOT NULL
-      order by "userId", "filmTMDbId";
-    `;
+      select "userId", "filmTMDbId", "rating", "liked"
+        from "filmLogs"
+        where "userId" != $1 and
+        "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
+        "rating" IS NOT NULL
+        order by "userId", "filmTMDbId";
+      `;
     const otherRatingsResp = await db.query(otherUsersRatingsSql, [
       activeUserId,
     ]);
@@ -442,12 +439,12 @@ app.get('/api/compare/all', authMiddleware, async (req, res, next) => {
 app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
   try {
     const activeUserRatingsSql = `
-    select "userId", "filmTMDbId", "rating", "liked"
-      from "filmLogs"
-      where "userId" = $1 and
-      "rating" IS NOT NULL
-      order by "filmTMDbId";
-    `;
+      select "userId", "filmTMDbId", "rating", "liked"
+        from "filmLogs"
+        where "userId" = $1 and
+        "rating" IS NOT NULL
+        order by "filmTMDbId";
+      `;
     const activeUserId = req.user?.userId;
     if (!activeUserId) {
       throw new ClientError(400, 'userId is required.');
@@ -460,14 +457,14 @@ app.get('/api/compare/following', authMiddleware, async (req, res, next) => {
       throw new ClientError(400, 'Too few reviews');
     }
     const otherUsersRatingsSql = `
-    select "userId", "filmTMDbId", "rating", "liked"
-      from "filmLogs"
-      where "userId" != $1 and
-      "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
-      "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1) and
-      "rating" IS NOT NULL
-      order by "userId", "filmTMDbId";
-    `;
+      select "userId", "filmTMDbId", "rating", "liked"
+        from "filmLogs"
+        where "userId" != $1 and
+        "filmTMDbId" in (select "filmTMDbId" from "filmLogs" where "userId" = $1) and
+        "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1) and
+        "rating" IS NOT NULL
+        order by "userId", "filmTMDbId";
+      `;
     const otherRatingsResp = await db.query(otherUsersRatingsSql, [
       activeUserId,
     ]);
@@ -561,10 +558,10 @@ app.post(
         throw new ClientError(400, 'Rating must be between 0.5-5');
       }
       const sql = `
-      insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId", "dateWatched")
-        values ($1, $2, $3, $4, $5, $6, $7)
-        returning "filmTMDbId", "review", "rating", "liked", "userId";
-      `;
+        insert into "filmLogs" ("filmTMDbId", "filmPosterPath", "review", "rating", "liked", "userId", "dateWatched")
+          values ($1, $2, $3, $4, $5, $6, $7)
+          returning "filmTMDbId", "review", "rating", "liked", "userId";
+        `;
       const params = [
         filmTMDbId,
         filmPosterPath,
@@ -601,13 +598,13 @@ app.put(
         throw new ClientError(400, 'Rating must be between 0.5-5');
       }
       const sql = `
-      update "filmLogs"
-        set "review" = $1,
-        "rating" = $2,
-        "liked" = $3
-        where "userId" = $4 and "filmTMDbId" = $5
-        returning *;
-      `;
+        update "filmLogs"
+          set "review" = $1,
+          "rating" = $2,
+          "liked" = $3
+          where "userId" = $4 and "filmTMDbId" = $5
+          returning *;
+        `;
       const params = [
         review !== '' ? review : null,
         rating !== 0 ? rating * 2 : null,
@@ -638,11 +635,11 @@ app.delete(
         throw new ClientError(400, 'userId is required.');
       }
       const sql = `
-      delete from "filmLogs"
-        where "userId" = $1 and
-        "filmTMDbId" = $2
-        returning *;
-    `;
+        delete from "filmLogs"
+          where "userId" = $1 and
+          "filmTMDbId" = $2
+          returning *;
+      `;
       const resp = await db.query(sql, [userId, filmTMDbId]);
       const [row] = resp.rows;
       if (!row) {
@@ -661,14 +658,13 @@ app.get(
   async (req, res, next) => {
     try {
       const watchedSql = `
-      select distinct "filmTMDbId", "filmPosterPath", "dateWatched"
-        from "filmLogs"
-        where "userId" = $1
-        ORDER BY "dateWatched" desc;
-    `;
+        select distinct "filmTMDbId", "filmPosterPath", "dateWatched"
+          from "filmLogs"
+          where "userId" = $1
+          ORDER BY "dateWatched" desc;
+      `;
       const watchedResp = await db.query(watchedSql, [req.user?.userId]);
-      const watched = watchedResp.rows;
-      res.json(watched);
+      res.json(watchedResp.rows);
     } catch (err) {
       next(err);
     }
@@ -678,12 +674,12 @@ app.get(
 app.get('/api/films/ratings/recent', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-    select *
-      from "filmLogs"
-      where "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1)
-      order by "dateWatched"
-      limit 6;
-    `;
+      select *
+        from "filmLogs"
+        where "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1)
+        order by "dateWatched"
+        limit 6;
+      `;
     const resp = await db.query(sql, [req.user?.userId]);
     res.json(resp.rows);
   } catch (err) {
@@ -701,17 +697,16 @@ app.get(
         throw new ClientError(400, 'filmId must be a number');
       }
       const filmRatingSQL = `
-      select "filmTMDbId", "userId", "review", "rating", "liked"
-        from "filmLogs"
-        where "filmTMDbId" = $1 and
-        "userId" = $2;
-    `;
+        select "filmTMDbId", "userId", "review", "rating", "liked"
+          from "filmLogs"
+          where "filmTMDbId" = $1 and
+          "userId" = $2;
+      `;
       const filmRatingResponse = await db.query(filmRatingSQL, [
         filmTMDbId,
         req.user?.userId,
       ]);
-      const filmRating = filmRatingResponse.rows;
-      res.json(filmRating);
+      res.json(filmRatingResponse.rows);
     } catch (err) {
       next(err);
     }
@@ -729,8 +724,7 @@ app.get('/api/films/reviews', authMiddleware, async (req, res, next) => {
         limit 10;
     `;
     const reviewResp = await db.query(recentReviewsSql, [req.user?.userId]);
-    const reviews = reviewResp.rows;
-    res.json(reviews);
+    res.json(reviewResp.rows);
   } catch (err) {
     next(err);
   }
@@ -754,8 +748,7 @@ app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
     );
     if (!filmCreditsResp.ok) throw new Error('Unable to fetch details');
     const filmCredits = (await filmCreditsResp.json()) as object;
-    const fullDetails = { ...filmDetails, ...filmCredits };
-    res.json(fullDetails);
+    res.json({ ...filmDetails, ...filmCredits });
   } catch (err) {
     next(err);
   }

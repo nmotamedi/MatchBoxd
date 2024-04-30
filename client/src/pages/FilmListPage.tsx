@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '../components/useUser';
 import { Catalog } from '../components/Catalog';
 import { FilmPosterDetails } from '../App';
-import { getFilmList } from '../lib/data';
+import { fetchFilmList } from '../lib/data';
 import { useNavigate } from 'react-router-dom';
 import './FilmAndWishlist.css';
 
@@ -20,7 +20,7 @@ export function FilmListPage() {
         return;
       }
       try {
-        const filmList = await getFilmList();
+        const filmList = await fetchFilmList();
         setFilms(filmList);
       } catch (err) {
         setError(err);

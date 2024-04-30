@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FilmDetails, RatingEntry } from '../App';
-import { getDetails } from '../lib/data';
+import { fetchDetails } from '../lib/data';
 import { useNavigate } from 'react-router-dom';
 import '../pages/ReviewsPage.css';
 
@@ -17,7 +17,7 @@ export function ReviewDisplayComponent({ ratingEntry }: Prop) {
   useEffect(() => {
     async function readFilmDetails() {
       try {
-        const filmDetails = await getDetails(ratingEntry.filmTMDbId);
+        const filmDetails = await fetchDetails(ratingEntry.filmTMDbId);
         setDetails(filmDetails);
       } catch (err) {
         setError(err);
