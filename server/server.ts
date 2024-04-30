@@ -583,6 +583,47 @@ app.post(
   }
 );
 
+app.put(
+  '/api/films/ratings/:filmTMDbId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { filmTMDbId } = req.params;
+      if (!Number.isInteger(+filmTMDbId)) {
+        throw new ClientError(400, 'filmId must be a number');
+      }
+      const userId = req.user?.userId;
+      if (!userId) {
+        throw new ClientError(400, 'userId is required.');
+      }
+      const { review, rating, liked } = req.body;
+      if (rating > 5 || rating < 0) {
+        throw new ClientError(400, 'Rating must be between 0.5-5');
+      }
+      const sql = `
+      update "filmLogs"
+        set "review" = $1,
+        "rating" = $2,
+        "liked" = $3
+        where "userId" = $4 and "filmTMDbId" = $5
+        returning *;
+      `;
+      const params = [
+        review !== '' ? review : null,
+        rating !== 0 ? rating * 2 : null,
+        liked,
+        userId,
+        filmTMDbId,
+      ];
+      const resp = await db.query(sql, params);
+      const [row] = resp.rows;
+      res.json(row);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 app.delete(
   `/api/films/ratings/:filmTMDbId`,
   authMiddleware,

@@ -290,6 +290,33 @@ export async function addFilmRating(
   return ratingEntry;
 }
 
+export async function updateFilmRating(
+  reviewValue: string,
+  ratingValue: number,
+  likedChecked: boolean,
+  filmDetails: FilmDetails
+): Promise<RatingEntry> {
+  const body = {
+    review: reviewValue,
+    rating: ratingValue,
+    liked: likedChecked,
+  };
+  const req = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readToken()}`,
+    },
+    body: JSON.stringify(body),
+  };
+  const res = await fetch(`/api/films/ratings/${filmDetails.id}`, req);
+  if (!res.ok) {
+    throw new Error(`Fetch error: ${res.status}`);
+  }
+  const ratingEntry = await res.json();
+  return ratingEntry;
+}
+
 export async function getFilmRating(
   filmTMDbId: string | undefined
 ): Promise<RatingEntry | undefined> {
