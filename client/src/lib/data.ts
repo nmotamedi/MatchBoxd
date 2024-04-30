@@ -2,6 +2,7 @@ import {
   Comparator,
   FilmDetails,
   FilmPosterDetails,
+  ProfileDetails,
   RatingEntry,
 } from '../App';
 import { User } from '../components/UserContext';
@@ -315,6 +316,20 @@ export async function getReviews(): Promise<RatingEntry[]> {
     },
   };
   const resp = await fetch('/api/films/reviews', req);
+  if (!resp.ok) {
+    throw new Error(`Fetch Error: ${resp.status}`);
+  }
   const reviews = await resp.json();
   return reviews;
+}
+
+export async function getProfileDetails(
+  userId: number
+): Promise<ProfileDetails> {
+  const resp = await fetch(`/api/profile/${userId}`);
+  if (!resp.ok) {
+    throw new Error(`Fetch Error: ${resp.status}`);
+  }
+  const profileDetails = await resp.json();
+  return profileDetails;
 }

@@ -18,9 +18,11 @@ import {
   readOverlappingLiked,
   readOverlappingRatings,
   readOverlappingWatched,
+  readRecentActivity,
   readRecentReviews,
   readRecommendations,
   readUsername,
+  readWishlist,
 } from './lib/user-queries.js';
 
 type User = {
@@ -151,14 +153,11 @@ app.get(`/api/films/popular`, async (req, res, next) => {
 
 app.get('/api/wishlists', authMiddleware, async (req, res, next) => {
   try {
-    const sql = `
-    select *
-    from "filmWishlists"
-    where "userId" = $1
-    order by "createdAt" desc;
-    `;
-    const resp = await db.query(sql, [req.user?.userId]);
-    res.json(resp.rows);
+    if (!req.user?.userId) {
+      throw new Error('Authentication required');
+    }
+    const wishlistEntries = await readWishlist(req.user?.userId);
+    res.json(wishlistEntries);
   } catch (err) {
     next(err);
   }
@@ -685,6 +684,34 @@ app.get(`/api/films/:filmTMDbId`, async (req, res, next) => {
     const filmCredits = (await filmCreditsResp.json()) as object;
     const fullDetails = { ...filmDetails, ...filmCredits };
     res.json(fullDetails);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/profile/:userId', async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    if (!Number.isInteger(+userId)) {
+      throw new ClientError(400, 'userId must be a number');
+    }
+    const username = await readUsername(+userId);
+    if (!username.username) {
+      throw new ClientError(404, `User ${userId} not found`);
+    }
+    const filmCount = await readFilmCount(+userId);
+    const followingCount = await readFollowerCount(+userId);
+    const recentReviews = await readRecentReviews(+userId);
+    const wishlistEntries = await readWishlist(+userId);
+    const recentEntries = await readRecentActivity(+userId);
+    res.json({
+      ...username,
+      ...filmCount,
+      ...followingCount,
+      recentReviews: [...recentReviews],
+      wishlistEntries: [...wishlistEntries],
+      recentLogs: [...recentEntries],
+    });
   } catch (err) {
     next(err);
   }

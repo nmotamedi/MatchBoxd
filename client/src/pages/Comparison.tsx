@@ -12,10 +12,12 @@ import {
 import { useUser } from '../components/useUser';
 import { FaPlus, FaUserCheck } from 'react-icons/fa6';
 import { ReviewDisplayComponent } from '../components/ReviewDisplayComponent';
+import { useNavigate } from 'react-router-dom';
 import './ReviewsPage.css';
 
 export function Comparison() {
   const { user } = useUser();
+  const nav = useNavigate();
   const [isAllView, setIsAllView] = useState(true);
   const [mostCompatibleAll, setMostCompatibleAll] = useState<Comparator>();
   const [mostCompatibleFollowing, setMostCompatibleFollowing] =
@@ -149,8 +151,26 @@ export function Comparison() {
                     ? mostCompatibleAll.username[0]
                     : mostCompatibleFollowing.username[0]
                 }
+                onClick={() =>
+                  nav(
+                    `/profile/${
+                      isAllView
+                        ? mostCompatibleAll.highestUserId
+                        : mostCompatibleFollowing.highestUserId
+                    }`
+                  )
+                }
               />
-              <h1>
+              <h1
+                onClick={() =>
+                  nav(
+                    `/profile/${
+                      isAllView
+                        ? mostCompatibleAll.highestUserId
+                        : mostCompatibleFollowing.highestUserId
+                    }`
+                  )
+                }>
                 {isAllView
                   ? mostCompatibleAll.username
                   : mostCompatibleFollowing.username}

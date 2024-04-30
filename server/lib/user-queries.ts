@@ -127,3 +127,26 @@ export async function readOverlappingLiked(
   const [overlappingLiked] = overlappingLikedResp.rows;
   return overlappingLiked;
 }
+
+export async function readWishlist(userId: number): Promise<unknown[]> {
+  const sql = `
+    select *
+    from "filmWishlists"
+    where "userId" = $1
+    order by "createdAt" desc;
+    `;
+  const resp = await db.query(sql, [userId]);
+  return resp.rows;
+}
+
+export async function readRecentActivity(userId: number): Promise<unknown[]> {
+  const sql = `
+    select *
+    from "filmLogs"
+    where "userId" = $1
+    order by "createdAt" desc
+    limit 4;
+    `;
+  const resp = await db.query(sql, [userId]);
+  return resp.rows;
+}

@@ -42,6 +42,15 @@ export type Comparator = {
   recentReviews: (RatingEntry & { filmPosterPath: string })[];
 };
 
+export type ProfileDetails = {
+  films: string;
+  followers: string;
+  username: string;
+  recentReviews: (RatingEntry & { filmPosterPath: string })[];
+  recentLogs: (RatingEntry & { filmPosterPath: string })[];
+  wishlistEntries: (RatingEntry & { filmPosterPath: string })[];
+};
+
 export type RatingEntry = {
   filmTMDbId: number;
   review?: string;
