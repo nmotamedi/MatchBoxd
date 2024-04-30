@@ -126,39 +126,51 @@ export function Profile() {
       <div className="row">
         <div className="column-half">
           <div className="row activity-img-row">
-            <Catalog
-              text="RECENT ACTIVITY"
-              cards={profileDetails.recentLogs.map((log) => ({
-                id: log.filmTMDbId,
-                poster_path: log.filmPosterPath,
-              }))}
-              limit={4}
-            />
+            {profileDetails.recentLogs.length > 0 ? (
+              <Catalog
+                text="RECENT ACTIVITY"
+                cards={profileDetails.recentLogs.map((log) => ({
+                  id: log.filmTMDbId,
+                  poster_path: log.filmPosterPath,
+                }))}
+                limit={4}
+              />
+            ) : (
+              <h5>No activity to show</h5>
+            )}
           </div>
           <div className="reviews-page">
             <div className="reviews-column">
               <h5 className="reviews-title">RECENT REVIEWS</h5>
               <hr />
-              <div className="reviews-container">
-                {profileDetails.recentReviews.map((recentReview) => (
-                  <div key={recentReview.filmTMDbId}>
-                    <ReviewDisplayComponent ratingEntry={recentReview} />
-                  </div>
-                ))}
-              </div>
+              {profileDetails.recentReviews.length > 0 ? (
+                <div className="reviews-container">
+                  {profileDetails.recentReviews.map((recentReview) => (
+                    <div key={recentReview.filmTMDbId}>
+                      <ReviewDisplayComponent ratingEntry={recentReview} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <h5>No reviews to show</h5>
+              )}
             </div>
           </div>
         </div>
         <div className="column-half">
           <div className="row">
-            <Catalog
-              text="WISHLIST"
-              cards={profileDetails.wishlistEntries.map((log) => ({
-                id: log.filmTMDbId,
-                poster_path: log.filmPosterPath,
-              }))}
-              limit={18}
-            />
+            {profileDetails.wishlistEntries.length > 0 ? (
+              <Catalog
+                text="WISHLIST"
+                cards={profileDetails.wishlistEntries.map((log) => ({
+                  id: log.filmTMDbId,
+                  poster_path: log.filmPosterPath,
+                }))}
+                limit={18}
+              />
+            ) : (
+              <h5>No wishlist films to show</h5>
+            )}
           </div>
         </div>
       </div>
