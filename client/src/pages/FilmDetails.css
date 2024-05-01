@@ -58,3 +58,39 @@ p {
 .tagline {
   text-transform: uppercase;
 }
+
+@media only screen and (width <= 600px) {
+  .poster-column {
+    flex-basis: 100%;
+  }
+
+  .information-column {
+    flex-basis: 100%;
+  }
+
+  .rating-column {
+    flex-basis: 100%;
+  }
+
+  .details-row {
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    top: -23rem !important;
+    margin: 1.32rem;
+  }
+
+  h2 {
+    font-size: 1.65rem;
+  }
+
+  .cast-crew-row {
+    font-size: 0.5544rem;
+  }
+
+  .poster-column > img {
+    width: 33% !important;
+    border-radius: 10px;
+    border: 2px solid rgba(128, 128, 128, 0.536);
+    margin-top: 1rem;
+  }
+}

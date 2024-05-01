@@ -60,4 +60,27 @@ svg > path:hover {
   height: 0;
 }
 
-/* CHECKED STYLES */
+label {
+  color: white;
+  font-weight: 200;
+}
+
+@media only screen and (width <= 600px) {
+  .rating-container {
+    margin-top: 3rem;
+  }
+
+  .rating-container h5 {
+    font-size: 0.8rem;
+  }
+
+  .rating-container label {
+    color: white;
+    font-weight: 200;
+  }
+
+  .rating-container svg {
+    height: 2rem;
+    width: 2rem;
+  }
+}

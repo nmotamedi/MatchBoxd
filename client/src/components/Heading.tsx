@@ -94,8 +94,16 @@ export function Heading() {
     <>
       <div className="row heading">
         <div className="column-half" onClick={() => nav('/')}>
-          <img className="logo" src="/MatchBoxd_Logo.png" alt="Logo" />
-          <img className="logo" src="/MatchBoxd_Name.png" alt="Title Logo" />
+          <img
+            className="logo logo-icon"
+            src="/MatchBoxd_Logo.png"
+            alt="Logo"
+          />
+          <img
+            className="logo logo-title"
+            src="/MatchBoxd_Name.png"
+            alt="Title Logo"
+          />
         </div>
         <div className="header-column column-half">
           {user && !searchIsOpen && (

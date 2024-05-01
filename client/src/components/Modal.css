@@ -64,3 +64,38 @@ dialog h4 {
 dialog button {
   margin-top: 3rem;
 }
+
+@media only screen and (width <= 600px) {
+  dialog {
+    width: 60%;
+    padding: 1.32rem;
+  }
+
+  dialog h1 {
+    font-size: 1rem;
+  }
+
+  dialog textarea::placeholder {
+    font-size: 0.66rem;
+  }
+
+  dialog h2 {
+    font-family: Barlow, sans-serif;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 1rem;
+    color: white;
+  }
+
+  dialog input {
+    margin-bottom: 0.33rem;
+  }
+
+  dialog h4 {
+    font-size: 0.66rem;
+  }
+
+  dialog button {
+    margin-top: 2rem;
+  }
+}

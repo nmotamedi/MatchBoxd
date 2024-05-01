@@ -123,7 +123,7 @@ export function Profile() {
           </div>
         </div>
       </div>
-      <div className="row">
+      <div className="row profile-body">
         <div className="column-half">
           <div className="row activity-img-row">
             {profileDetails.recentLogs.length > 0 ? (
@@ -166,7 +166,7 @@ export function Profile() {
                   id: log.filmTMDbId,
                   poster_path: log.filmPosterPath,
                 }))}
-                limit={18}
+                limit={8}
               />
             ) : (
               <h5>No wishlist films to show</h5>

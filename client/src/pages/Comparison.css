@@ -87,10 +87,6 @@
   text-align: center;
 }
 
-.comparison-body img {
-  width: 20%;
-}
-
 .comparison-profile a:hover {
   background-color: #870e0e;
   color: gray;
@@ -100,4 +96,74 @@
 .comparison-profile h1:hover {
   text-decoration: underline;
   cursor: pointer;
+}
+
+.comparison-body .card-catalog .film-card-wrapper {
+  width: 24%;
+  height: 100%;
+}
+
+@media only screen and (width <= 600px) {
+  .comparison-wrapper {
+    padding: 1.32rem;
+  }
+
+  .comparison-wrapper h1 {
+    font-size: 1.32rem;
+  }
+
+  .comparison-wrapper h2 {
+    font-size: 0.766rem;
+  }
+
+  .comparison-wrapper h2.selected {
+    font-size: 1rem;
+  }
+
+  .comparison-header {
+    margin-top: 0.66rem;
+    margin-bottom: 1.32rem;
+    flex-wrap: wrap;
+  }
+
+  .comparison-header .row {
+    margin-top: 1.32rem;
+  }
+
+  .comparison-header h1 {
+    font-size: 1.32rem;
+  }
+
+  .comparison-header h3 {
+    font-size: 1.4rem;
+  }
+
+  .comparison-header h4 {
+    font-size: 0.56rem;
+  }
+
+  .comparison-body {
+    flex-wrap: wrap;
+  }
+
+  .comparison-body h5 {
+    font-size: 0.8rem;
+  }
+
+  .comparison-body h6 {
+    font-size: 0.8rem;
+  }
+
+  .comparison-header .column-half {
+    flex-basis: 100%;
+    margin-top: 0.66rem;
+  }
+
+  .comparison-body .column-half {
+    flex-basis: 100%;
+  }
+
+  body .comparison-body .card-catalog {
+    padding: 0 2rem !important;
+  }
 }
