@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Button } from './Button';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,14 +10,15 @@ export function Search({ handleClose }: Prop) {
   const [inputValue, setInputValue] = useState('');
   const nav = useNavigate();
 
-  function handleClick() {
+  function handleClick(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     nav(`/search/${inputValue.replace(' ', '%20')}`);
     setInputValue('');
     handleClose && handleClose();
   }
 
   return (
-    <>
+    <form onSubmit={handleClick}>
       <input
         value={inputValue}
         id="search"
@@ -25,7 +26,7 @@ export function Search({ handleClose }: Prop) {
         placeholder="Search"
         onChange={(e) => setInputValue(e.currentTarget.value)}
       />
-      <Button text="Search" onClick={handleClick} />
-    </>
+      <Button text="Search" />
+    </form>
   );
 }

@@ -5,8 +5,8 @@ import './Comparison.css';
 import { Comparator } from '../App';
 import {
   addOrDeleteFollower,
-  getMostCompatibleAll,
-  getMostCompatibleFollowing,
+  fetchMostCompatibleAll,
+  fetchMostCompatibleFollowing,
   verifyFollower,
 } from '../lib/data';
 import { useUser } from '../components/useUser';
@@ -29,13 +29,13 @@ export function Comparison() {
   async function handleFollowClick(userId: number) {
     if (!user) {
       alert('Please sign up or log in to follow other users!');
-    } else {
-      try {
-        await addOrDeleteFollower(isFollowingAll, userId);
-        setIsFollowingAll(!isFollowingAll);
-      } catch (err) {
-        console.error(err);
-      }
+      return;
+    }
+    try {
+      await addOrDeleteFollower(isFollowingAll, userId);
+      setIsFollowingAll(!isFollowingAll);
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -46,22 +46,18 @@ export function Comparison() {
     }
     async function readMostCompatible() {
       try {
-        const compatibleAll = (await getMostCompatibleAll()) as Comparator;
+        const compatibleAll = (await fetchMostCompatibleAll()) as Comparator;
         setMostCompatibleAll(compatibleAll);
         if (!compatibleAll.highestUserId) {
           return;
         }
         const compatibleFollowing =
-          (await getMostCompatibleFollowing()) as Comparator;
+          (await fetchMostCompatibleFollowing()) as Comparator;
         setMostCompatibleFollowing(compatibleFollowing);
         const [isFollowerAll] = await verifyFollower(
           compatibleAll.highestUserId
         );
-        if (isFollowerAll) {
-          setIsFollowingAll(true);
-        } else {
-          setIsFollowingAll(false);
-        }
+        setIsFollowingAll(!!isFollowerAll);
       } catch (err) {
         setError(err);
       } finally {
@@ -146,7 +142,7 @@ export function Comparison() {
         <hr />
         <div className="row comparison-header">
           <div className="column-half">
-            <div className="row">
+            <div className="row comparison-profile">
               <ProfileIcon
                 text={
                   isAllView

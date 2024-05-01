@@ -6,7 +6,7 @@ import { ProfileDetails } from '../App';
 import { useEffect, useState } from 'react';
 import {
   addOrDeleteFollower,
-  getProfileDetails,
+  fetchProfileDetails,
   verifyFollower,
 } from '../lib/data';
 import { ProfileIcon } from '../components/ProfileIcon';
@@ -30,7 +30,7 @@ export function Profile() {
         if (!profileId) {
           throw new Error('Profile number is needed');
         }
-        const details = await getProfileDetails(+profileId);
+        const details = await fetchProfileDetails(+profileId);
         setProfileDetails(details);
       } catch (err) {
         setError(err);

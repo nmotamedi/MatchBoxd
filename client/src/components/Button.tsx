@@ -2,16 +2,15 @@ import './Button.css';
 
 type Prop = {
   text: string;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick?: () => void;
+  isButton?: boolean;
 };
 
-export function Button({ text, onClick }: Prop) {
+export function Button({ text, onClick, isButton }: Prop) {
   return (
     <button
-      onClick={
-        onClick &&
-        ((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClick(e))
-      }
+      onClick={() => onClick?.()}
+      type={isButton ? 'button' : 'submit'}
       className="button">
       {text}
     </button>

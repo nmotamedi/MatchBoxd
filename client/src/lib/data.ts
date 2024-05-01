@@ -9,14 +9,6 @@ import { User } from '../components/UserContext';
 
 export const tokenKey = 'MB.token';
 
-export function saveToken(token: string | undefined): void {
-  if (token) {
-    sessionStorage.setItem(tokenKey, token);
-  } else {
-    sessionStorage.removeItem(tokenKey);
-  }
-}
-
 export function saveUser(
   userPayload: { user: User; token: string } | undefined
 ): void {
@@ -25,12 +17,6 @@ export function saveUser(
   } else {
     localStorage.removeItem(tokenKey);
   }
-}
-
-export function readToken(): string {
-  const token = sessionStorage.getItem(tokenKey);
-  if (!token) throw new Error('No token found');
-  return token;
 }
 
 export function readUser(): { user: User; token: string } | undefined {
@@ -50,8 +36,7 @@ export async function postSignUp(username, password): Promise<User> {
   if (!res.ok) {
     throw new Error(`Fetch error: ${res.status}`);
   }
-  const user = await res.json();
-  return user;
+  return await res.json();
 }
 
 export async function verifySignIn(
@@ -69,74 +54,58 @@ export async function verifySignIn(
   if (!resp.ok) {
     throw new Error(`${resp.status}`);
   }
-  const payload = await resp.json();
-  return payload;
+  return await resp.json();
 }
 
-export async function getDetails(
+export async function fetchDetails(
   filmId: string | number | undefined
 ): Promise<FilmDetails> {
   const detailsResp = await fetch(`/api/films/${filmId}`);
   if (!detailsResp.ok) throw new Error('Failed to fetch film details');
-  const details = await detailsResp.json();
-  return details;
+  return await detailsResp.json();
 }
 
-export async function getWishlist(
+export async function fetchWishlist(
   user: User | undefined,
   filmId: string | undefined
 ): Promise<boolean> {
-  if (user) {
-    const wishlistReq = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${readToken()}`,
-      },
-    };
-    const wishlistResp = await fetch(`/api/wishlists/${filmId}`, wishlistReq);
-    if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
-    const [isWishlist] = await wishlistResp.json();
-    if (isWishlist) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
+  if (!user) {
     return false;
   }
+  const wishlistReq = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${readUser()?.token}`,
+    },
+  };
+  const wishlistResp = await fetch(`/api/wishlists/${filmId}`, wishlistReq);
+  if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
+  const [isWishlist] = await wishlistResp.json();
+  return !!isWishlist;
 }
 
 export async function addToOrDeleteFromWishlist(
   filmDetails: FilmDetails | undefined,
   isOnWishlist: boolean
 ): Promise<void> {
-  let req = {
+  const req = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
     body: JSON.stringify({ filmPosterPath: filmDetails!.poster_path }),
   };
-  if (isOnWishlist) {
-    req = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${readToken()}`,
-      },
-      body: JSON.stringify({ filmPosterPath: '' }),
-    };
-  }
+  if (isOnWishlist) req.method = 'DELETE';
   const resp = await fetch(`/api/wishlists/${filmDetails!.id}`, req);
   if (!resp.ok) throw new Error(`${resp.status}`);
 }
 
-export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
+export async function fetchRecentFilms(): Promise<FilmPosterDetails[]> {
   const req = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const recentResp = await fetch('/api/films/ratings/recent', req);
@@ -149,30 +118,28 @@ export async function getRecentFilms(): Promise<FilmPosterDetails[]> {
   return formRecentList;
 }
 
-export async function getPopularFilms(): Promise<FilmDetails[]> {
+export async function fetchPopularFilms(): Promise<FilmDetails[]> {
   const popResp = await fetch('/api/films/popular');
   if (!popResp.ok) throw new Error('Fetch failed');
   const popJSON = await popResp.json();
-  const popList = popJSON.results as FilmDetails[];
-  return popList;
+  return popJSON.results as FilmDetails[];
 }
 
-export async function getQueryResults(
+export async function fetchQueryResults(
   query
 ): Promise<{ userResults: User[]; filmResults: FilmDetails[] }> {
   const resp = await fetch(`/api/search/${query}`);
   if (!resp.ok) throw new Error(`${resp.status}: ${resp.statusText}`);
-  const json = (await resp.json()) as {
+  return (await resp.json()) as {
     userResults: User[];
     filmResults: FilmDetails[];
   };
-  return json;
 }
 
-export async function getFullWishlist(): Promise<FilmPosterDetails[]> {
+export async function fetchFullWishlist(): Promise<FilmPosterDetails[]> {
   const wishlistReq = {
     headers: {
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const wishlistResp = await fetch(`/api/wishlists`, wishlistReq);
@@ -184,10 +151,10 @@ export async function getFullWishlist(): Promise<FilmPosterDetails[]> {
   return formWishlist;
 }
 
-export async function getFilmList(): Promise<FilmPosterDetails[]> {
+export async function fetchFilmList(): Promise<FilmPosterDetails[]> {
   const filmListReq = {
     headers: {
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const filmListResp = await fetch('/api/films/ratings/watched', filmListReq);
@@ -205,60 +172,51 @@ export async function verifyFollower(
   const followerReq = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const followerResp = await fetch(`/api/follow/${userId}`, followerReq);
   if (!followerResp.ok) throw new Error(`${followerResp.status}`);
-  const isFollower = await followerResp.json();
-  return isFollower;
+  return await followerResp.json();
 }
 
 export async function addOrDeleteFollower(isFollowing, userId): Promise<void> {
-  let req = {
+  const req = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   if (isFollowing) {
-    req = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${readToken()}`,
-      },
-    };
+    req.method = 'DELETE';
   }
   const resp = await fetch(`/api/follow/${userId}`, req);
   if (!resp.ok) throw new Error(`${resp.status}`);
 }
 
-export async function getMostCompatibleAll(): Promise<Comparator> {
+export async function fetchMostCompatibleAll(): Promise<Comparator> {
   const req = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const resp = await fetch('/api/compare/all', req);
   if (!resp.ok) throw new Error(`${resp.status}`);
-  const mostCompatibleAll = (await resp.json()) as Comparator;
-  return mostCompatibleAll;
+  return (await resp.json()) as Comparator;
 }
 
-export async function getMostCompatibleFollowing(): Promise<Comparator> {
+export async function fetchMostCompatibleFollowing(): Promise<Comparator> {
   const req = {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const resp = await fetch('/api/compare/following', req);
   if (!resp.ok) throw new Error(`${resp.status}`);
-  const mostCompatibleFollowing = (await resp.json()) as Comparator;
-  return mostCompatibleFollowing;
+  return (await resp.json()) as Comparator;
 }
 
 export async function addFilmRating(
@@ -278,7 +236,7 @@ export async function addFilmRating(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
     body: JSON.stringify(body),
   };
@@ -286,8 +244,7 @@ export async function addFilmRating(
   if (!res.ok) {
     throw new Error(`Fetch error: ${res.status}`);
   }
-  const ratingEntry = await res.json();
-  return ratingEntry;
+  return await res.json();
 }
 
 export async function updateFilmRating(
@@ -305,7 +262,7 @@ export async function updateFilmRating(
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
     body: JSON.stringify(body),
   };
@@ -313,56 +270,52 @@ export async function updateFilmRating(
   if (!res.ok) {
     throw new Error(`Fetch error: ${res.status}`);
   }
-  const ratingEntry = await res.json();
-  return ratingEntry;
+  return await res.json();
 }
 
-export async function getFilmRating(
+export async function fetchFilmRating(
   filmTMDbId: string | undefined
 ): Promise<RatingEntry | undefined> {
   const req = {
     headers: {
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const res = await fetch(`/api/films/ratings/${filmTMDbId}`, req);
   if (!res.ok) {
     throw new Error(`Fetch Error: ${res.status}`);
   }
-  const rating = (await res.json())[0] as RatingEntry;
-  return rating;
+  return (await res.json())[0] as RatingEntry;
 }
 
-export async function getReviews(): Promise<RatingEntry[]> {
+export async function fetchReviews(): Promise<RatingEntry[]> {
   const req = {
     headers: {
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const resp = await fetch('/api/films/reviews', req);
   if (!resp.ok) {
     throw new Error(`Fetch Error: ${resp.status}`);
   }
-  const reviews = await resp.json();
-  return reviews;
+  return await resp.json();
 }
 
-export async function getProfileDetails(
+export async function fetchProfileDetails(
   userId: number
 ): Promise<ProfileDetails> {
   const resp = await fetch(`/api/profile/${userId}`);
   if (!resp.ok) {
     throw new Error(`Fetch Error: ${resp.status}`);
   }
-  const profileDetails = await resp.json();
-  return profileDetails;
+  return await resp.json();
 }
 
 export async function deleteFilmRating(filmId: number): Promise<void> {
   const req = {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${readToken()}`,
+      Authorization: `Bearer ${readUser()?.token}`,
     },
   };
   const resp = await fetch(`/api/films/ratings/${filmId}`, req);

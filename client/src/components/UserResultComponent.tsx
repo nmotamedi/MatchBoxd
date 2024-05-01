@@ -19,17 +19,14 @@ export function UserResultComponent({ userDetails }: Prop) {
 
   useEffect(() => {
     async function readFollower() {
-      if (user) {
-        try {
-          const [isFollower] = await verifyFollower(userDetails.userId);
-          if (isFollower) {
-            setIsFollowing(true);
-          } else {
-            setIsFollowing(false);
-          }
-        } catch (err) {
-          alert('follower error');
-        }
+      if (!user) {
+        return;
+      }
+      try {
+        const [isFollower] = await verifyFollower(userDetails.userId);
+        setIsFollowing(!!isFollower);
+      } catch (err) {
+        alert('follower error');
       }
     }
     readFollower();

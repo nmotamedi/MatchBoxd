@@ -9,6 +9,7 @@ type Props = {
 
 export function Catalog({ text, cards, limit }: Props) {
   const nav = useNavigate();
+  const cardsPerPage = 18;
 
   const cardArray: JSX.Element[] = [];
   for (let i = 0; i < limit && i < cards.length; i++) {
@@ -24,8 +25,8 @@ export function Catalog({ text, cards, limit }: Props) {
     );
     cardArray.push(singleCard);
   }
-  if (cardArray.length % 18 && cardArray.length < limit) {
-    for (let i = cardArray.length % 18; i < 18; i++) {
+  if (cardArray.length % cardsPerPage && cardArray.length < limit) {
+    for (let i = cardArray.length % cardsPerPage; i < cardsPerPage; i++) {
       const singleCard = (
         <img
           className="filmCard void"
