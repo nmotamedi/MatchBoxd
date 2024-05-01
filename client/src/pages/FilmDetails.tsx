@@ -28,6 +28,9 @@ export function FilmDetailPage() {
       try {
         const details = await fetchDetails(filmId);
         setFilmDetails(details);
+        if (!user) {
+          return;
+        }
         const wishlist = await fetchWishlist(user, filmId);
         setIsOnWishlist(wishlist);
         const previousRating = await fetchFilmRating(filmId);
