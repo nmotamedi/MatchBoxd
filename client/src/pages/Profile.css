@@ -15,6 +15,10 @@
   width: 24%;
 }
 
+.profile-container .review-image-column {
+  flex-basis: 20%;
+}
+
 .profile-container .review-image-column .film-card-wrapper {
   width: 100%;
 }
@@ -30,5 +34,9 @@
 
   .profile-container .reviews-page {
     padding: 1.32rem;
+  }
+
+  .film-card-wrapper.void {
+    display: none;
   }
 }

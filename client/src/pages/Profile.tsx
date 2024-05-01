@@ -166,7 +166,7 @@ export function Profile() {
                   id: log.filmTMDbId,
                   poster_path: log.filmPosterPath,
                 }))}
-                limit={18}
+                limit={8}
               />
             ) : (
               <h5>No wishlist films to show</h5>
