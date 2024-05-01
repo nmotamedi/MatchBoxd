@@ -8,6 +8,8 @@ declare global {
       user?: {
         userId: number;
       };
+      filmTMDbId?: string;
+      followedUserId?: string;
     }
   }
 }
