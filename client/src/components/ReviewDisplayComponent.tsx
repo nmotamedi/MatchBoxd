@@ -40,12 +40,15 @@ export function ReviewDisplayComponent({ ratingEntry }: Prop) {
     <>
       <div className="row">
         <div className="review-image-column">
-          <img
-            className="filmCard reviewCard"
-            src={`https://image.tmdb.org/t/p/w780/${details?.poster_path}`}
-            alt={details?.title}
-            onClick={() => nav(`/film/${ratingEntry.filmTMDbId}`)}
-          />
+          <div
+            className="film-card-wrapper"
+            onClick={() => nav(`/film/${ratingEntry.filmTMDbId}`)}>
+            <img
+              className="filmCard reviewCard"
+              src={`https://image.tmdb.org/t/p/w780/${details?.poster_path}`}
+              alt={details?.title}
+            />
+          </div>
         </div>
         <div className="column-two-thirds">
           <div className="row title-row">

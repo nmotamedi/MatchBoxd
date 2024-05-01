@@ -3,6 +3,32 @@
   padding: 2rem;
 }
 
-.profile-container .row.activity-img-row img {
+.profile-container .row.activity-img-row .card-wrapper {
   width: 23%;
+}
+
+.profile-container a:hover {
+  color: #870e0e;
+}
+
+.profile-container .profile-body .film-card-wrapper {
+  width: 24%;
+}
+
+.profile-container .review-image-column .film-card-wrapper {
+  width: 100%;
+}
+
+@media only screen and (width <= 600px) {
+  .profile-container .profile-body {
+    flex-wrap: wrap;
+  }
+
+  .profile-container .column-half {
+    flex-basis: 100%;
+  }
+
+  .profile-container .reviews-page {
+    padding: 1.32rem;
+  }
 }

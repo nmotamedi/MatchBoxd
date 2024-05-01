@@ -9,6 +9,7 @@
 
 .reviews-page .row.title-row {
   align-items: flex-end;
+  justify-content: space-between;
 }
 
 .reviews-title {
@@ -20,8 +21,11 @@
 }
 
 .filmCard.reviewCard {
-  width: 100%;
   margin: 0;
+}
+
+.review-image-column .film-card-wrapper {
+  width: 100%;
 }
 
 .column-two-thirds {
@@ -59,4 +63,37 @@
 
 .review-image-column {
   flex-basis: 10%;
+}
+
+@media only screen and (width <= 600px) {
+  .reviews-page .reviews-title {
+    font-size: 0.8rem;
+  }
+
+  .reviews-page .review-image-column {
+    flex-basis: 20%;
+  }
+
+  .column-two-thirds {
+    padding: 1.32rem;
+  }
+
+  .column-two-thirds h1 {
+    font-size: 1.65rem;
+    margin-right: 1.32rem;
+  }
+
+  .column-two-thirds h3 {
+    font-size: 0.554rem;
+    margin-top: 0.66rem;
+  }
+
+  .column-two-thirds h2 {
+    font-size: 0.726rem;
+    margin-top: 1.32rem;
+  }
+
+  .reviews-page .row.title-row {
+    align-items: flex-start;
+  }
 }

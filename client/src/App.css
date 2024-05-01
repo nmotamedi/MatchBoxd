@@ -18,22 +18,28 @@
 }
 
 .filmCard {
-  width: 14%;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.film-card-wrapper {
+  width: calc(100% / 6.2);
   border-radius: 10px;
   border: 2px solid rgba(128, 128, 128, 0.536);
   margin-bottom: 3rem;
 }
 
-.filmCard:hover {
+.film-card-wrapper:hover {
   border: 2px solid #350000;
   cursor: pointer;
 }
 
-.filmCard.void {
+.film-card-wrapper.void {
   visibility: hidden;
 }
 
-.filmCard.void:hover {
+.film-card-wrapper.void:hover {
   border: none;
   cursor: default;
 }
@@ -82,7 +88,6 @@ a.profile-button {
   background-color: #d9d9d9;
   font-weight: 400;
   font-size: 2rem;
-  padding: 1rem;
   border: 1px solid #870e0e;
   border-radius: 50%;
   width: 50px;
@@ -121,4 +126,18 @@ a.profile-button {
 
 .search-result-info:hover img {
   border-color: #870e0e;
+}
+
+@media only screen and (width <= 600px) {
+  body .card-catalog {
+    padding: 1.32rem !important;
+  }
+
+  body .card-catalog h5 {
+    font-size: 0.8rem;
+  }
+
+  body .card-catalog .film-card-wrapper {
+    width: 30%;
+  }
 }
