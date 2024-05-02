@@ -32,6 +32,10 @@
     padding: 1.32rem;
   }
 
+  .profile-container .review-image-column {
+    height: 166px;
+  }
+
   .profile-wishlist .film-master-wrapper.void {
     display: none;
   }

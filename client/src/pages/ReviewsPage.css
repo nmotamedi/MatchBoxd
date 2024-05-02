@@ -73,6 +73,7 @@
 
   .reviews-page .review-image-column {
     flex-basis: 20%;
+    height: 200px;
   }
 
   .column-two-thirds {
