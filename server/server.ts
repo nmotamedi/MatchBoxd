@@ -43,6 +43,7 @@ export type Rating = {
   rating: number;
   userId: number;
   review?: string;
+  username?: string;
 };
 
 export type Comparator = {

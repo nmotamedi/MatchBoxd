@@ -23,11 +23,14 @@
   border-radius: 8px;
 }
 
-.film-card-wrapper {
+.film-master-wrapper {
   width: calc(100% / 6.2);
+}
+
+.film-card-wrapper {
   border-radius: 10px;
   border: 2px solid rgba(128, 128, 128, 0.536);
-  margin-bottom: 3rem;
+  height: 80%;
 }
 
 .film-card-wrapper:hover {
@@ -35,13 +38,26 @@
   cursor: pointer;
 }
 
-.film-card-wrapper.void {
+.film-master-wrapper.void {
   visibility: hidden;
 }
 
-.film-card-wrapper.void:hover {
+.film-master-wrapper.void:hover {
   border: none;
   cursor: default;
+}
+
+.film-master-wrapper .card-rating-row {
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  min-height: 58px;
+}
+
+.film-master-wrapper a:hover {
+  cursor: pointer;
+  background-color: #870e0e;
 }
 
 .outlet-body h5 {
@@ -137,7 +153,7 @@ a.profile-button {
     font-size: 0.8rem;
   }
 
-  body .card-catalog .film-card-wrapper {
+  body .card-catalog .film-master-wrapper {
     width: 30%;
   }
 }

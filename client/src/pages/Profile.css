@@ -3,15 +3,11 @@
   padding: 2rem;
 }
 
-.profile-container .row.activity-img-row .card-wrapper {
-  width: 23%;
-}
-
 .profile-container a:hover {
   color: #870e0e;
 }
 
-.profile-container .profile-body .film-card-wrapper {
+.profile-container .profile-body .film-master-wrapper {
   width: 24%;
 }
 
@@ -19,7 +15,7 @@
   flex-basis: 20%;
 }
 
-.profile-container .review-image-column .film-card-wrapper {
+.profile-container .review-image-column .film-master-wrapper {
   width: 100%;
 }
 
@@ -36,7 +32,11 @@
     padding: 1.32rem;
   }
 
-  .film-card-wrapper.void {
+  .profile-container .review-image-column {
+    height: 166px;
+  }
+
+  .profile-wishlist .film-master-wrapper.void {
     display: none;
   }
 }

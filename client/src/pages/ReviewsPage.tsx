@@ -32,7 +32,13 @@ export function ReviewsPage() {
   }
 
   if (!reviews || reviews.length === 0) {
-    return <div style={{ color: 'white' }}>Please add a review!</div>;
+    return (
+      <div style={{ color: 'white', padding: '2rem' }}>
+        <h5>REVIEWS</h5>
+        <hr />
+        <h4>Please add a review!</h4>
+      </div>
+    );
   }
 
   return (

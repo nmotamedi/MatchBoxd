@@ -114,6 +114,9 @@ export async function fetchRecentFilms(): Promise<FilmPosterDetails[]> {
   const formRecentList = recentList.map((recent) => ({
     id: recent.filmTMDbId,
     poster_path: recent.filmPosterPath,
+    username: recent.username,
+    rating: recent.rating,
+    userId: recent.userId,
   }));
   return formRecentList;
 }
@@ -161,7 +164,11 @@ export async function fetchFilmList(): Promise<FilmPosterDetails[]> {
   if (!filmListResp.ok) throw new Error(`${filmListResp.status}`);
   const filmList = await filmListResp.json();
   const formWishlist = filmList.map((wish) => {
-    return { id: wish.filmTMDbId, poster_path: wish.filmPosterPath };
+    return {
+      id: wish.filmTMDbId,
+      poster_path: wish.filmPosterPath,
+      rating: wish.rating,
+    };
   });
   return formWishlist;
 }

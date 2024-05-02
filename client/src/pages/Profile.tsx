@@ -132,11 +132,16 @@ export function Profile() {
                 cards={profileDetails.recentLogs.map((log) => ({
                   id: log.filmTMDbId,
                   poster_path: log.filmPosterPath,
+                  rating: log.rating,
                 }))}
                 limit={4}
               />
             ) : (
-              <h5>No activity to show</h5>
+              <div style={{ width: '100%', color: 'white', padding: '2rem' }}>
+                <h5>RECENT ACTIVITY</h5>
+                <hr />
+                <h4>No activity to show</h4>
+              </div>
             )}
           </div>
           <div className="reviews-page">
@@ -157,7 +162,7 @@ export function Profile() {
             </div>
           </div>
         </div>
-        <div className="column-half">
+        <div className="column-half profile-wishlist">
           <div className="row">
             {profileDetails.wishlistEntries.length > 0 ? (
               <Catalog
@@ -169,7 +174,11 @@ export function Profile() {
                 limit={8}
               />
             ) : (
-              <h5>No wishlist films to show</h5>
+              <div style={{ width: '100%', color: 'white', padding: '2rem' }}>
+                <h5>WISHLIST</h5>
+                <hr />
+                <h4>No wishlist films to show</h4>
+              </div>
             )}
           </div>
         </div>
