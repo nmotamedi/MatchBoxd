@@ -1,7 +1,8 @@
 import express from 'express';
 import { ClientError, authMiddleware } from '../lib';
-import { db, tmdbOptions } from '../server';
+import { Rating, db, tmdbOptions } from '../server';
 import fetch from 'node-fetch';
+import { readUsername } from '../lib/user-queries';
 
 export const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get(`/popular`, async (req, res, next) => {
 router.get('/ratings/watched', authMiddleware, async (req, res, next) => {
   try {
     const watchedSql = `
-        select distinct "filmTMDbId", "filmPosterPath", "dateWatched"
+        select distinct "filmTMDbId", "filmPosterPath", "dateWatched", "rating"
           from "filmLogs"
           where "userId" = $1
           ORDER BY "dateWatched" desc;
@@ -43,7 +44,18 @@ router.get('/ratings/recent', authMiddleware, async (req, res, next) => {
         limit 6;
       `;
     const resp = await db.query(sql, [req.user?.userId]);
-    res.json(resp.rows);
+    const ratings = resp.rows as Rating[];
+    const promises = await Promise.all(
+      ratings.map((rating) => {
+        return readUsername(rating.userId);
+      })
+    );
+    const usernames = await Promise.all(promises.map((p) => p.username));
+    const ratingsWUsername = ratings.map((rating, index) => {
+      rating.username = usernames[index];
+      return rating;
+    });
+    res.json(ratingsWUsername);
   } catch (err) {
     next(err);
   }

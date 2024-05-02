@@ -71,10 +71,31 @@ export function Comparison() {
     return <div style={{ color: 'white' }}>Loading...</div>;
   }
 
-  if (error || !mostCompatibleAll) {
+  if (error || !mostCompatibleAll || !mostCompatibleAll.highestUserId) {
     return (
-      <div style={{ color: 'white' }}>
-        Rate more movies to see your accurate compatibility!
+      <div className="comparison-wrapper">
+        <h1>COMPARISON</h1>
+        <div
+          className="row"
+          style={{ justifyContent: 'start', alignItems: 'flex-end' }}>
+          <h2
+            className={'selected'}
+            style={{ padding: '1rem' }}
+            onClick={() => setIsAllView(true)}>
+            All Users
+          </h2>
+          <h2
+            className={'selected'}
+            style={{ padding: '1rem' }}
+            onClick={() => setIsAllView(false)}>
+            Following
+          </h2>
+        </div>
+        <hr />
+        <h3 style={{ color: 'white' }}>
+          {' '}
+          Rate more movies to see your accurate compatibility!{' '}
+        </h3>
       </div>
     );
   }
@@ -107,14 +128,6 @@ export function Comparison() {
         </div>
         <hr />
         <h3 style={{ color: 'white' }}> Please follow more users! </h3>
-      </div>
-    );
-  }
-
-  if (!mostCompatibleAll.highestUserId) {
-    return (
-      <div style={{ color: 'white' }}>
-        Rate more movies to see your accurate compatibility!
       </div>
     );
   }
@@ -264,12 +277,14 @@ export function Comparison() {
                         (recommendation) => ({
                           id: recommendation.filmTMDbId,
                           poster_path: recommendation.filmPosterPath,
+                          rating: recommendation.rating,
                         })
                       )
                     : mostCompatibleFollowing.recommendations.map(
                         (recommendation) => ({
                           id: recommendation.filmTMDbId,
                           poster_path: recommendation.filmPosterPath,
+                          rating: recommendation.rating,
                         })
                       )
                 }

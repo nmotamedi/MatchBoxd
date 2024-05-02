@@ -75,7 +75,11 @@ export function Home() {
         )}
 
         {user && recentFilms!.length === 0 && (
-          <div style={{ color: 'white' }}>No Recent Listing</div>
+          <div style={{ color: 'white', padding: '2rem' }}>
+            <h5>RECENT COMMUNITY ACTIVITY</h5>
+            <hr />
+            <h4>No Recent Listings</h4>
+          </div>
         )}
         {!user && (
           <div className="row">
@@ -89,7 +93,11 @@ export function Home() {
         {popFilms.length !== 0 ? (
           <Catalog text="POPULAR" cards={popFilms} limit={6} />
         ) : (
-          <div>No Popular Listings</div>
+          <div style={{ color: 'white', padding: '2rem' }}>
+            <h5>POPULAR</h5>
+            <hr />
+            <h4>No Popular Listings</h4>
+          </div>
         )}
       </div>
     </>

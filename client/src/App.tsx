@@ -17,6 +17,9 @@ import { Profile } from './pages/Profile';
 export type FilmPosterDetails = {
   id: number;
   poster_path: string;
+  username?: string;
+  userId?: number;
+  rating?: number;
 };
 
 export type FilmDetails = FilmPosterDetails & {

@@ -70,6 +70,10 @@
   text-align: left;
 }
 
+.comparison-body .review-image-column {
+  flex-basis: 20%;
+}
+
 .comparison-body h6 {
   font-family: Barlow, sans-serif;
   font-weight: 500;
@@ -98,7 +102,7 @@
   cursor: pointer;
 }
 
-.comparison-body .card-catalog .film-card-wrapper {
+.comparison-body .card-catalog .film-master-wrapper {
   width: 24%;
   height: 100%;
 }

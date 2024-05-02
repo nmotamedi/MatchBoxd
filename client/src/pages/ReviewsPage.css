@@ -63,6 +63,7 @@
 
 .review-image-column {
   flex-basis: 10%;
+  height: 255px;
 }
 
 @media only screen and (width <= 600px) {
