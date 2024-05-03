@@ -107,6 +107,14 @@
   height: 100%;
 }
 
+.comparison-body .recommendations-row .filmCard-row .film-master-wrapper {
+  height: 275px;
+}
+
+.recommendations-row .card-catalog {
+  width: 100%;
+}
+
 @media only screen and (width <= 600px) {
   .comparison-wrapper {
     padding: 1.32rem;
@@ -169,5 +177,9 @@
 
   body .comparison-body .card-catalog {
     padding: 0 2rem !important;
+  }
+
+  .comparison-body .recommendations-row .filmCard-row .film-master-wrapper {
+    height: 200px;
   }
 }
