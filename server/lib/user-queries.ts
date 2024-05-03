@@ -118,7 +118,7 @@ export async function readOverlappingLiked(
       SELECT COUNT(distinct t1."filmTMDbId") as "overlappingLiked"
         FROM "filmLogs" AS t1
         JOIN "filmLogs" AS t2 ON t1."filmTMDbId" = t2."filmTMDbId" AND t1."liked" = t2."liked"
-        WHERE t1."userId" = $1 AND t2."userId" = $2;
+        WHERE t1."userId" = $1 AND t2."userId" = $2 AND t1."liked" = true;
     `;
   const overlappingLikedResp = await db.query(overlappingLikedSql, [
     activeUserId,

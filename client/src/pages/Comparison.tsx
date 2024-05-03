@@ -263,7 +263,7 @@ export function Comparison() {
                 </h5>
               </div>
             </div>
-            <div className="row">
+            <div className="row recommendations-row">
               <Catalog
                 text={`${
                   isAllView
