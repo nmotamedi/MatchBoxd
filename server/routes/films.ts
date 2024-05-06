@@ -23,10 +23,10 @@ router.get('/ratings/watched/:page', authMiddleware, async (req, res, next) => {
   try {
     const { page } = req.params;
     const watchedSql = `
-        select distinct "filmTMDbId", "filmPosterPath", "dateWatched", "rating"
+        select distinct "filmTMDbId", "filmPosterPath", "dateWatched", "createdAt", "rating"
           from "filmLogs"
           where "userId" = $1
-          ORDER BY "dateWatched" desc
+          ORDER BY "createdAt" desc
           limit 18 OFFSET ($2 - 1) * 18;
       `;
     const watchedResp = await db.query(watchedSql, [req.user?.userId, page]);
