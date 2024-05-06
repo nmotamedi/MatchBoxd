@@ -6,14 +6,15 @@ import { db } from '../server';
 export const router = express.Router();
 
 router
-  .route('/')
+  .route('/:page')
   .all(authMiddleware)
   .get(async (req, res, next) => {
     try {
+      const { page } = req.params;
       if (!req.user?.userId) {
         throw new Error('Authentication required');
       }
-      res.json(await readWishlist(req.user?.userId));
+      res.json(await readWishlist(req.user?.userId, +page));
     } catch (err) {
       next(err);
     }

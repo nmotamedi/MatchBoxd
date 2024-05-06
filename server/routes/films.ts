@@ -19,15 +19,17 @@ router.get(`/popular`, async (req, res, next) => {
   }
 });
 
-router.get('/ratings/watched', authMiddleware, async (req, res, next) => {
+router.get('/ratings/watched/:page', authMiddleware, async (req, res, next) => {
   try {
+    const { page } = req.params;
     const watchedSql = `
         select distinct "filmTMDbId", "filmPosterPath", "dateWatched", "rating"
           from "filmLogs"
           where "userId" = $1
-          ORDER BY "dateWatched" desc;
+          ORDER BY "dateWatched" desc
+          limit 18 OFFSET ($2 - 1) * 18;
       `;
-    const watchedResp = await db.query(watchedSql, [req.user?.userId]);
+    const watchedResp = await db.query(watchedSql, [req.user?.userId, page]);
     res.json(watchedResp.rows);
   } catch (err) {
     next(err);
@@ -40,7 +42,7 @@ router.get('/ratings/recent', authMiddleware, async (req, res, next) => {
       select *
         from "filmLogs"
         where "userId" in (select "followedUserId" from "followLogs" where "activeUserId" = $1)
-        order by "dateWatched"
+        order by "createdAt"
         limit 6;
       `;
     const resp = await db.query(sql, [req.user?.userId]);

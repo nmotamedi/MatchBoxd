@@ -24,7 +24,7 @@ router.get('/:userId', async (req, res, next) => {
     const filmCount = await readFilmCount(+userId);
     const followingCount = await readFollowerCount(+userId);
     const recentReviews = await readRecentReviews(+userId);
-    const wishlistEntries = await readWishlist(+userId);
+    const wishlistEntries = await readWishlist(+userId, 1);
     const recentEntries = await readRecentActivity(+userId);
     res.json({
       ...username,

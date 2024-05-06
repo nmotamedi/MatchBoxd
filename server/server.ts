@@ -28,6 +28,7 @@ export type FilmDetails = {
   tagline: string;
   poster_path: string;
   release_date: string;
+  popularity: number;
   title: string;
   cast: { name: string }[];
   crew: { name: string; job: string }[];

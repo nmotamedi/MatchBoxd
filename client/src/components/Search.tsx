@@ -12,6 +12,9 @@ export function Search({ handleClose }: Prop) {
 
   function handleClick(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inputValue === '' || inputValue === ' ') {
+      return;
+    }
     nav(`/search/${inputValue.replace(' ', '%20')}`);
     setInputValue('');
     handleClose && handleClose();

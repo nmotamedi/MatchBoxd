@@ -86,7 +86,7 @@ export function Home() {
             <div className="column-full">
               <h1>Track films you've watched.</h1>
               <h1>Save those you want to see.</h1>
-              <h1>Find your most compatible.</h1>
+              <h1>Find your next favorite from similar users. </h1>
             </div>
           </div>
         )}

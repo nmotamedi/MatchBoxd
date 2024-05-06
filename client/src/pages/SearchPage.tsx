@@ -106,7 +106,7 @@ export function SearchPage() {
             style={{ alignItems: 'start', textAlign: 'left' }}>
             <h4>{film.title}</h4>
             <p style={{ marginLeft: '1rem', color: 'white' }}>
-              {film.release_date.split('-')[0]}
+              {film.release_date && film.release_date.split('-')[0]}
             </p>
             <p style={{ marginLeft: '1rem', color: 'white' }}>
               {film.overview}

@@ -139,13 +139,15 @@ export async function fetchQueryResults(
   };
 }
 
-export async function fetchFullWishlist(): Promise<FilmPosterDetails[]> {
+export async function fetchFullWishlist(
+  page: number
+): Promise<FilmPosterDetails[]> {
   const wishlistReq = {
     headers: {
       Authorization: `Bearer ${readUser()?.token}`,
     },
   };
-  const wishlistResp = await fetch(`/api/wishlists`, wishlistReq);
+  const wishlistResp = await fetch(`/api/wishlists/${page}`, wishlistReq);
   if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
   const wishlist = await wishlistResp.json();
   const formWishlist = wishlist.map((wish) => {
@@ -154,13 +156,18 @@ export async function fetchFullWishlist(): Promise<FilmPosterDetails[]> {
   return formWishlist;
 }
 
-export async function fetchFilmList(): Promise<FilmPosterDetails[]> {
+export async function fetchFilmList(
+  page: number
+): Promise<FilmPosterDetails[]> {
   const filmListReq = {
     headers: {
       Authorization: `Bearer ${readUser()?.token}`,
     },
   };
-  const filmListResp = await fetch('/api/films/ratings/watched', filmListReq);
+  const filmListResp = await fetch(
+    `/api/films/ratings/watched/${page}`,
+    filmListReq
+  );
   if (!filmListResp.ok) throw new Error(`${filmListResp.status}`);
   const filmList = await filmListResp.json();
   const formWishlist = filmList.map((wish) => {
