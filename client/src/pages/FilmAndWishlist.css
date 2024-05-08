@@ -10,6 +10,20 @@
   cursor: pointer;
 }
 
+.pagination-row {
+  padding-bottom: 1rem;
+  margin: 0;
+}
+
+.pagination-row h5 {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+.pagination-row h5:hover {
+  cursor: pointer;
+}
+
 @media only screen and (width <= 600px) {
   .row.list-nav-row h4 {
     font-size: 0.858rem;

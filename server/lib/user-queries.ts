@@ -128,14 +128,18 @@ export async function readOverlappingLiked(
   return overlappingLiked;
 }
 
-export async function readWishlist(userId: number): Promise<unknown[]> {
+export async function readWishlist(
+  userId: number,
+  page: number
+): Promise<unknown[]> {
   const sql = `
     select *
       from "filmWishlists"
       where "userId" = $1
-      order by "createdAt" desc;
+      order by "createdAt" desc
+      limit 18 OFFSET ($2 - 1) * 18;
     `;
-  const resp = await db.query(sql, [userId]);
+  const resp = await db.query(sql, [userId, page]);
   return resp.rows;
 }
 

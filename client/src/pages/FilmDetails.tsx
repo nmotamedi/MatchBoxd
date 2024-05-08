@@ -105,17 +105,19 @@ export function FilmDetailPage() {
           <h2>{filmDetails.title}</h2>
           <div className="row">
             <h4>
-              <b>{filmDetails.release_date.split('-')[0]}</b>
+              <b>
+                {filmDetails.release_date &&
+                  filmDetails.release_date.split('-')[0]}
+              </b>
             </h4>
             &nbsp;
             <h4>
               Directed by{' '}
               <b>
-                {
-                  filmDetails.crew!.find(
+                {filmDetails.crew &&
+                  filmDetails.crew.find(
                     (crewMember) => crewMember.job === 'Director'
-                  )?.name
-                }
+                  )?.name}
               </b>
             </h4>
           </div>

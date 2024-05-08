@@ -11,7 +11,7 @@ router.get(`/:query`, async (req, res, next) => {
     const sql = `
       select "username", "userId"
         from "users"
-        where lower("username") like $1;
+        where "username" ilike $1;
       `;
     const userQueryResp = await db.query(sql, [`%${query}%`]);
     const userResults = userQueryResp.rows;
@@ -21,7 +21,9 @@ router.get(`/:query`, async (req, res, next) => {
     );
     if (!filmQueryResp.ok) throw new Error('Unable to fetch films');
     const filmJSON = (await filmQueryResp.json()) as FilmQueryResults;
-    const filmResults = filmJSON.results as FilmDetails[];
+    const filmResults = filmJSON.results.sort(
+      (a, b) => b.popularity - a.popularity
+    ) as FilmDetails[];
     res.json({ userResults, filmResults });
   } catch (err) {
     next(err);

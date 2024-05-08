@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { FilmPosterDetails } from '../App';
 import { ProfileIcon } from './ProfileIcon';
+import { FaStar, FaStarHalf } from 'react-icons/fa6';
 
 type Props = {
   text: string;
@@ -15,6 +16,23 @@ export function Catalog({ text, cards, limit }: Props) {
   const cardArray: JSX.Element[] = [];
   for (let i = 0; i < limit && i < cards.length; i++) {
     const card = cards[i];
+    const cardRating: JSX.Element[] = [];
+    if (card.rating) {
+      for (let j = 1; j <= card.rating / 2; j++) {
+        cardRating.push(
+          <span className="star" key={`${i} - ${j}`}>
+            <FaStar color="#6d6056" size="1.5rem" />
+          </span>
+        );
+      }
+      if ((card.rating / 2) % 1) {
+        cardRating.push(
+          <span className="star" key={4444}>
+            <FaStarHalf color="#6d6056" size="1.5rem" />
+          </span>
+        );
+      }
+    }
     const singleCard = (
       <div className="film-master-wrapper" key={card.id}>
         <div
@@ -33,7 +51,7 @@ export function Catalog({ text, cards, limit }: Props) {
               text={card.username[0]}
             />
           )}
-          {card.rating && <h5>{card.rating / 2}/5</h5>}
+          {card.rating && cardRating}
         </div>
       </div>
     );
