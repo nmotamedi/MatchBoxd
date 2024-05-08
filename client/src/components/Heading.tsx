@@ -21,8 +21,6 @@ export function Heading() {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [signInUsername, setSignInUsername] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
-  // const [signInMessage, setSignInMessage] = useState('');
-  // const [signUpMessage, setSignUpMessage] = useState('');
 
   async function handleSignUpSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -132,6 +130,15 @@ export function Heading() {
             <>
               <h3 onClick={() => setSignInIsOpen(true)}>SIGN IN</h3>
               <h3 onClick={() => setSignUpIsOpen(true)}>CREATE ACCOUNT</h3>
+              <h3
+                onClick={() =>
+                  handleSignIn(
+                    { userId: 26, username: 'Guest' },
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2LCJ1c2VybmFtZSI6Ikd1ZXN0IiwiaWF0IjoxNzE1MTkyMzkxfQ.GAjBdDuE4gF-z_2jvHisr5ZM20bFJqI6-LXfozJ2s9o'
+                  )
+                }>
+                GUEST LOG IN
+              </h3>
               <Search />
             </>
           )}
