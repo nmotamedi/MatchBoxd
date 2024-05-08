@@ -58,6 +58,7 @@
 .film-master-wrapper a:hover {
   cursor: pointer;
   background-color: #870e0e;
+  color: gray;
 }
 
 .film-master-wrapper .card-rating-row svg > path:hover {
