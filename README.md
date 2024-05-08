@@ -44,7 +44,7 @@ Try the application live at [http://matchboxd-dev.us-west-1.elasticbeanstalk.com
 
 ## Preview
 
-!!!!!GIF!!!!!
+[MatchBoxd Walkthrough]: (/assets/matchboxd_walkthrough.gif)
 
 ## Stretch Features
 
@@ -56,32 +56,44 @@ Try the application live at [http://matchboxd-dev.us-west-1.elasticbeanstalk.com
 
 ### System Requirements
 
-- Node.js 10 or higher
-- NPM 6 or higher
-- MongoDB 4 or higher
+- Node.js v20.12.2 or higher
+- NPM 10.5.0 or higher
+- PostgresQL ??
+- Calculate-correlation 1.2.3
+- Node Fetch 3.3.2
+- react-fontawesome: 1.7.1
+- react-icons: 5.1.0
+- react-router-dom: 6.22.3
+- tsx: 4.7.0
+- typescript: 5.1.6
 
 ### Getting Started
 
 1. Clone the repository.
 
    ```shell
-   git clone https://github.com/Learning-Fuze/sgt-react
-   cd sgt-react
+   git clone https://github.com/nmotamedi/MatchBoxd.git
    ```
 
-1. Install all dependencies with NPM.
+2. Install all dependencies with NPM.
 
    ```shell
    npm install
    ```
 
-1. Import the example database to MongoDB.
+3. Start Database.
 
    ```shell
-   mongoimport --db sgt-react database/dump.json
+   sudo service postgresql start
    ```
 
-1. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
+4. Import the example database to PostgreSQL.
+
+   ```shell
+   npm run db:import
+   ```
+
+5. Start the project. Once started you can view the application by opening http://localhost:5173 in your browser.
 
    ```shell
    npm run dev
