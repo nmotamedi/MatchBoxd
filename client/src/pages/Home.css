@@ -14,7 +14,18 @@
 
 @media only screen and (width <= 600px) {
   body .home-container h1 {
-    font-size: 1.65rem;
+    font-size: 1.1rem;
     line-height: 0.66rem;
+  }
+
+  body .home-container .profile-button {
+    width: 33px;
+    height: 33px;
+    font-size: 1.32rem;
+  }
+
+  body .card-rating-row .star svg {
+    height: 1rem;
+    width: 1rem;
   }
 }
