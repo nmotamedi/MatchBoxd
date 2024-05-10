@@ -76,6 +76,10 @@
     height: 200px;
   }
 
+  .review-image-column .film-card-wrapper {
+    height: 100px;
+  }
+
   .column-two-thirds {
     padding: 1.32rem;
   }

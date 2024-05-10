@@ -179,7 +179,12 @@
     padding: 0 2rem !important;
   }
 
+  body .recommendations-row .star svg {
+    height: 0.75rem;
+    width: 0.75rem;
+  }
+
   .comparison-body .recommendations-row .filmCard-row .film-master-wrapper {
-    height: 200px;
+    height: 150px;
   }
 }
