@@ -150,6 +150,20 @@ a.profile-button {
   border-color: #870e0e;
 }
 
+@media only screen and (width <= 1100px) {
+  body .card-catalog {
+    padding: 1.5rem !important;
+  }
+
+  body .card-catalog h5 {
+    font-size: 1rem;
+  }
+
+  body .card-catalog .film-master-wrapper {
+    width: 30%;
+  }
+}
+
 @media only screen and (width <= 600px) {
   body .card-catalog {
     padding: 1.32rem !important;

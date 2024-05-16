@@ -65,6 +65,21 @@ label {
   font-weight: 200;
 }
 
+@media only screen and (width <= 1100px) {
+  .rating-container {
+    margin-top: 4rem;
+  }
+
+  .rating-container h5 {
+    font-size: 1rem;
+  }
+
+  .rating-container svg {
+    height: 2.2rem;
+    width: 2.2rem;
+  }
+}
+
 @media only screen and (width <= 600px) {
   .rating-container {
     margin-top: 3rem;
@@ -72,11 +87,6 @@ label {
 
   .rating-container h5 {
     font-size: 0.8rem;
-  }
-
-  .rating-container label {
-    color: white;
-    font-weight: 200;
   }
 
   .rating-container svg {

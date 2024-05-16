@@ -115,6 +115,21 @@
   width: 100%;
 }
 
+@media only screen and (width <= 1100px) {
+  body .recommendations-row .star svg {
+    height: 0.75rem;
+    width: 0.75rem;
+  }
+
+  .comparison-body .recommendations-row .filmCard-row .film-master-wrapper {
+    height: 150px;
+  }
+
+  .comparison-body h5 {
+    font-size: 1rem;
+  }
+}
+
 @media only screen and (width <= 600px) {
   .comparison-wrapper {
     padding: 1.32rem;
