@@ -6,7 +6,7 @@ import { db } from '../server';
 export const router = express.Router();
 
 router
-  .route('/:page')
+  .route('/page/:page')
   .all(authMiddleware)
   .get(async (req, res, next) => {
     try {
@@ -21,7 +21,7 @@ router
   });
 
 router
-  .route('/:filmTMDbId')
+  .route('/film/:filmTMDbId')
   .all(authMiddleware)
   .all((req, res, next) => {
     const { filmTMDbId } = req.params;

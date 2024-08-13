@@ -78,7 +78,10 @@ export async function fetchWishlist(
       Authorization: `Bearer ${readUser()?.token}`,
     },
   };
-  const wishlistResp = await fetch(`/api/wishlists/${filmId}`, wishlistReq);
+  const wishlistResp = await fetch(
+    `/api/wishlists/film/${filmId}`,
+    wishlistReq
+  );
   if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
   const [isWishlist] = await wishlistResp.json();
   return !!isWishlist;
@@ -97,7 +100,7 @@ export async function addToOrDeleteFromWishlist(
     body: JSON.stringify({ filmPosterPath: filmDetails!.poster_path }),
   };
   if (isOnWishlist) req.method = 'DELETE';
-  const resp = await fetch(`/api/wishlists/${filmDetails!.id}`, req);
+  const resp = await fetch(`/api/wishlists/film/${filmDetails!.id}`, req);
   if (!resp.ok) throw new Error(`${resp.status}`);
 }
 
@@ -147,7 +150,7 @@ export async function fetchFullWishlist(
       Authorization: `Bearer ${readUser()?.token}`,
     },
   };
-  const wishlistResp = await fetch(`/api/wishlists/${page}`, wishlistReq);
+  const wishlistResp = await fetch(`/api/wishlists/page/${page}`, wishlistReq);
   if (!wishlistResp.ok) throw new Error(`${wishlistResp.status}`);
   const wishlist = await wishlistResp.json();
   const formWishlist = wishlist.map((wish) => {

@@ -2,7 +2,7 @@ import { FaEye, FaThumbsUp, FaUserClock, FaX } from 'react-icons/fa6';
 import './RatingComponent.css';
 import { Button } from './Button';
 import { Modal } from './Modal';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { StarComponent } from './StarComponent';
 import { useUser } from './useUser';
 import { addFilmRating, deleteFilmRating, updateFilmRating } from '../lib/data';
@@ -29,11 +29,26 @@ export function RatingComponent({
 }: Prop) {
   const [isRating, setIsRating] = useState(false);
   const [reviewIsOpen, setReviewIsOpen] = useState(false);
-  const [isLogged, setIsLogged] = useState(logged ?? false);
-  const [reviewValue, setReviewValue] = useState(review ?? '');
-  const [ratingValue, setRatingValue] = useState<number>(rating ?? 0);
-  const [likedChecked, setLikeChecked] = useState(liked ?? false);
+  const [isLogged, setIsLogged] = useState(false);
+  const [reviewValue, setReviewValue] = useState('');
+  const [ratingValue, setRatingValue] = useState<number>(0);
+  const [likedChecked, setLikeChecked] = useState(false);
   const { user } = useUser();
+
+  useEffect(() => {
+    if (logged) {
+      setIsLogged(true);
+    }
+    if (liked) {
+      setLikeChecked(true);
+    }
+    if (review) {
+      setReviewValue(review);
+    }
+    if (rating) {
+      setRatingValue(rating);
+    }
+  }, [logged, liked, review, rating]);
 
   async function handleAddOrUpdateRatingEntry(
     event: FormEvent<HTMLFormElement>
