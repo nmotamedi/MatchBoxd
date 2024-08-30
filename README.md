@@ -1,5 +1,4 @@
-````md
-# student-grade-table
+# MatchBoxd
 
 A full stack JavaScript application for film watchers who want to find recommendations from users with similar taste.
 
@@ -98,4 +97,3 @@ Try the application live at [http://matchboxd-dev.us-west-1.elasticbeanstalk.com
    ```shell
    npm run dev
    ```
-````

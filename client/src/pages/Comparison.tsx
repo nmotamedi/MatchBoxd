@@ -230,7 +230,6 @@ export function Comparison() {
             </div>
             <div className="row">
               <div style={{ padding: '2rem' }} className="column-half">
-                {/* <h1>Chart</h1> */}
                 <h6>
                   {`${
                     isAllView
